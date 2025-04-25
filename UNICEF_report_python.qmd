@@ -61,10 +61,10 @@ COLORS = {
 #| include: false
 
 # Data Exploration
-unicef_indicator_1 = pd.read_csv("unicef_indicator_1.csv")
-unicef_indicator_2 = pd.read_csv("unicef_indicator_2.csv")
-unicef_metadata = pd.read_csv("unicef_metadata.csv")
-combined_indicators = pd.read_csv("Indicator_Combined.csv")
+unicef_indicator_1 = pd.read_csv("data/unicef_indicator_1.csv")
+unicef_indicator_2 = pd.read_csv("data/unicef_indicator_2.csv")
+unicef_metadata = pd.read_csv("data/unicef_metadata.csv")
+combined_indicators = pd.read_csv("data/Indicator_Combined.csv")
 ```
 
 ```{python}
