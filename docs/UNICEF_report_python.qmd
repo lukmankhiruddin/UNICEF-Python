@@ -1,0 +1,913 @@
+---
+title: "GROWING HOPE"
+subtitle: "**Understanding Child Growth & HIV Awareness Worldwide**"
+format:
+  html:
+    toc: true
+    theme: sandstone
+    code-fold: true         # Make code foldable
+    code-tools: true        # Add code tools (copy, etc.)
+    code-summary: "Show code" # Text shown on the code folding button
+    embed-resources: true   # Embed all resources in the HTML file
+execute:
+  echo: true                # Show code by default (changed from false)
+  warning: false
+  message: false
+  error: false
+jupyter: python3
+author: "Lukman Khiruddin"
+date: "April 22 2025"
+---
+
+------------------------------------------------------------------------
+
+
+                                                                                                                                                           
+## [Introduction]{style="font-family: serif"}
+
+In every corner of our world, the journey of childhood unfolds with both promise and pitfalls. Where the glow of hope is often shadowed by the realities of stunted growth and the silent spread of HIV.
+
+This dashboard invites you to explore the global landscape of child development, weaving together vivid data on child stunting and HIV awareness to reveal the stark contrasts and hidden connections shaping young lives.
+
+
+```{python}
+#| code-fold: true
+#| code-summary: "Show code"
+
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import geopandas as gpd
+import json
+import matplotlib.pyplot as plt
+
+# Define color scheme to match R's ggplot2
+COLORS = {
+    'green': '#00BA38',
+    'red': '#F8766D',
+    'blue': '#619CFF',
+    'orange': '#FF9E4A',
+    'yellow': '#B79F00',
+    'background': '#F0F0F0',
+    'grid': '#CCCCCC',
+    'text': '#000000'
+}
+```
+
+```{python}
+#| include: false
+
+# Data Exploration
+unicef_indicator_1 = pd.read_csv("data/unicef_indicator_1.csv")
+unicef_indicator_2 = pd.read_csv("data/unicef_indicator_2.csv")
+unicef_metadata = pd.read_csv("data/unicef_metadata.csv")
+combined_indicators = pd.read_csv("data/Indicator_Combined.csv")
+```
+
+```{python}
+#| include: false
+
+# Check the structure of datasets
+unicef_indicator_1.head()
+unicef_indicator_2.head()
+unicef_metadata.head()
+```
+
+```{python}
+#| include: false
+
+# Checking the shape and missing values in unicef_indicator_1 dataset
+print(unicef_indicator_1.shape)
+missing_values_1 = unicef_indicator_1.isna().sum()
+print(missing_values_1)
+# In the unicef_indicator_1 dataset, four columns contain only missing values - removing them
+```
+
+```{python}
+#| include: false
+
+# Fill missing values of alpha_2_code with alpha_3_code
+unicef_indicator_1['alpha_2_code'] = unicef_indicator_1['alpha_2_code'].fillna(unicef_indicator_1['alpha_3_code'])
+
+# Drop columns with all missing values from unicef_indicator_1 dataset
+cols_to_drop = ["time_period_activity_related_to_when_the_data_are_collected", 
+                "observation_confidentaility", 
+                "observation_status", 
+                "unit_multiplier"]
+unicef_indicator_1 = unicef_indicator_1.drop(columns=cols_to_drop, errors='ignore')
+```
+
+```{python}
+#| include: false
+
+# Missing values in unicef_indicator_2 dataset
+missing_values_2 = unicef_indicator_2.isna().sum()
+print(missing_values_2)
+
+# Fill missing values of alpha_2_code with alpha_3_code
+unicef_indicator_2['alpha_2_code'] = unicef_indicator_2['alpha_2_code'].fillna(unicef_indicator_2['alpha_3_code'])
+```
+
+```{python}
+#| include: false
+
+# Missing values in unicef_metadata dataset
+missing_values_metadata = unicef_metadata.isna().sum()
+print(missing_values_metadata)
+
+# Drop rows with missing values from unicef_metadata dataset
+unicef_metadata = unicef_metadata.dropna()
+```
+
+## [HIV Knowledge Among Youth by Country]{style="font-family: serif"}
+
+This comparison highlights the percentage of young people (aged 15–24) who possess comprehensive, correct knowledge of HIV across countries. By displaying both the leaders and laggards, we can better understand the global disparities in HIV education. This helps policymakers identify both success stories to emulate and areas where urgent action is needed.
+
+::: {.panel-tabset}
+
+## Top 5 Countries
+
+```{python hiv_knowledge_top_tab}
+#| code-fold: true
+#| code-summary: "Show code for top countries chart"
+
+# Filter HIV knowledge data
+hiv_knowledge_data = combined_indicators[
+    combined_indicators['indicator'].str.contains('comprehensive, correct knowledge of HIV', case=False, na=False)
+]
+hiv_knowledge_data = hiv_knowledge_data[~hiv_knowledge_data['obs_value'].isna()]
+
+# Get the most recent data for each country and sex
+recent_hiv_knowledge = hiv_knowledge_data.sort_values('time_period', ascending=False).groupby(['country', 'sex']).first().reset_index()
+
+# Calculate average knowledge by country and sort
+avg_knowledge = recent_hiv_knowledge.groupby('country')['obs_value'].mean().reset_index()
+avg_knowledge = avg_knowledge.sort_values('obs_value', ascending=True)  # Ascending for horizontal bars
+
+# Get top 5 countries
+top_5_countries = avg_knowledge.tail(5)  # Using tail because we reversed the order
+
+# Create interactive bar chart
+fig = go.Figure()
+
+fig.add_trace(go.Bar(
+    x=top_5_countries['obs_value'],
+    y=top_5_countries['country'],
+    orientation='h',
+    marker_color=COLORS['green'],
+    text=top_5_countries['obs_value'].round(1).astype(str) + '%',
+    textposition='outside',
+))
+
+fig.update_layout(
+    title={
+        'text': 'Top 5 Countries with Highest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    xaxis_title='Percentage (%)',
+    yaxis_title=None,
+    xaxis=dict(range=[0, 75]),
+    plot_bgcolor='white',
+    showlegend=False,
+    height=400,
+)
+
+fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_yaxes(gridcolor='white')
+
+fig.show()
+```
+
+## Bottom 5 Countries
+
+```{python hiv_knowledge_bottom_tab}
+#| code-fold: true
+#| code-summary: "Show code for bottom countries chart"
+
+# Get bottom 5 countries
+bottom_5_countries = avg_knowledge.head(5)
+
+# Create interactive bar chart
+fig = go.Figure()
+
+fig.add_trace(go.Bar(
+    x=bottom_5_countries['obs_value'],
+    y=bottom_5_countries['country'],
+    orientation='h',
+    marker_color=COLORS['green'],
+    text=bottom_5_countries['obs_value'].round(1).astype(str) + '%',
+    textposition='outside',
+))
+
+fig.update_layout(
+    title={
+        'text': 'Bottom 5 Countries with Lowest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    xaxis_title='Percentage (%)',
+    yaxis_title=None,
+    xaxis=dict(range=[0, 75]),
+    plot_bgcolor='white',
+    showlegend=False,
+    height=400,
+)
+
+fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_yaxes(gridcolor='white')
+
+fig.show()
+```
+
+:::
+
+This tabbed comparison reveals stark disparities in HIV knowledge among youth globally. The top-performing countries (primarily in Eastern and Southern Africa) have achieved knowledge rates above 50%, while the lowest-performing countries show rates below 5%. 
+
+This significant gap (over 55 percentage points between highest and lowest) highlights implementation disparities in HIV education programs worldwide. Countries at the bottom of the ranking could benefit from adapting successful education strategies from top-performing nations.
+
+## [Top 4 Countries with HIV Knowledge Trends Over Time]{style="font-family: serif"}
+
+This line chart tracks the evolution of HIV knowledge among males and females in 4 countries over time. The visual uncovers whether both genders are benefiting equally from education efforts, and whether progress is steady, stagnant, or declining. It provides a clear picture of gender gaps and helps guide future interventions to ensure no one is left behind.
+
+```{python hiv_knowledge_trends}
+#| code-fold: true
+#| code-summary: "Show code for trends chart"
+
+# Filter data for comprehensive HIV knowledge
+hiv_knowledge_data = combined_indicators[
+    combined_indicators['indicator'].str.contains('comprehensive, correct knowledge of HIV', case=False, na=False)
+]
+hiv_knowledge_data = hiv_knowledge_data[~hiv_knowledge_data['obs_value'].isna()]
+hiv_knowledge_data = hiv_knowledge_data[hiv_knowledge_data['sex'].isin(['Female', 'Male'])]
+
+# Count data points by country and sex to find those with the most data
+country_data_counts = (
+    hiv_knowledge_data.groupby(['country', 'sex'])
+    .size()
+    .reset_index(name='data_points')
+    .groupby('country')
+    .agg(
+        total_points=('data_points', 'sum'),
+        has_both_sexes=('sex', 'nunique')
+    )
+    .reset_index()
+)
+
+# Filter for countries with both sexes and sort by total data points
+country_data_counts = country_data_counts[country_data_counts['has_both_sexes'] > 1]
+country_data_counts = country_data_counts.sort_values('total_points', ascending=False)
+
+# Get top 4 countries with most data points
+top_trend_countries = country_data_counts.head(4)['country'].tolist()
+
+# Filter data for top countries
+trend_data = hiv_knowledge_data[hiv_knowledge_data['country'].isin(top_trend_countries)]
+
+# Create subplots
+fig = make_subplots(rows=2, cols=2, subplot_titles=top_trend_countries)
+
+# Plot each country
+for i, country in enumerate(top_trend_countries):
+    row = i // 2 + 1
+    col = i % 2 + 1
+    
+    country_data = trend_data[trend_data['country'] == country]
+    
+    for sex, color in zip(['Female', 'Male'], [COLORS['red'], COLORS['blue']]):
+        sex_data = country_data[country_data['sex'] == sex]
+        
+        fig.add_trace(
+            go.Scatter(
+                x=sex_data['time_period'],
+                y=sex_data['obs_value'],
+                name=sex,
+                line=dict(color=color),
+                mode='lines+markers',
+                showlegend=(i == 0),  # Show legend only for first country
+            ),
+            row=row, col=col
+        )
+
+fig.update_layout(
+    title={
+        'text': 'HIV Knowledge Trends by Sex & Country<br><sup>Percentage of youth (15-24) with comprehensive knowledge</sup>',
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    height=600,
+    showlegend=True,
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.2,
+        xanchor="center",
+        x=0.5
+    ),
+    plot_bgcolor='white'
+)
+
+# Update all axes
+for i in range(1, 5):
+    fig.update_yaxes(title_text='%', range=[0, 60], row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+    fig.update_xaxes(title_text='Year', row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+
+fig.show()
+```
+
+This line chart reveals the evolution of HIV knowledge among young people across countries with the richest trend data, showing patterns of change over time for both males and females.
+
+
+## [Global Gender Gap in HIV Knowledge]{style="font-family: serif"}
+
+This scatterplot displays HIV knowledge levels for young people (aged 15-24) across all countries, comparing males and females. Each point represents a country-gender combination, with the most recent available data for each country. The visualization reveals a clear pattern of gender disparity in HIV knowledge globally.
+
+```{python global_hiv_knowledge_scatter}
+#| code-fold: true
+#| code-summary: "Show code for global comparison"
+
+# Get the most recent data for each country and sex combination
+hiv_knowledge_global = (
+    hiv_knowledge_data
+    .sort_values('time_period', ascending=False)
+    .groupby(['country', 'sex'])
+    .first()
+    .reset_index()
+)
+
+# Filter to just Male and Female data
+hiv_knowledge_global = hiv_knowledge_global[hiv_knowledge_global['sex'].isin(['Female', 'Male'])]
+
+# Create scatter plot with box plots
+fig = go.Figure()
+
+# Add box plots
+for sex, color in zip(['Female', 'Male'], [COLORS['red'], COLORS['blue']]):
+    sex_data = hiv_knowledge_global[hiv_knowledge_global['sex'] == sex]
+    
+    # Add box plot
+    fig.add_trace(go.Box(
+        x=[sex] * len(sex_data),
+        y=sex_data['obs_value'],
+        name=sex,
+        marker_color=color,
+        boxpoints='all',
+        jitter=0.3,
+        pointpos=-1.8,
+        marker=dict(
+            color=color,
+            size=8,
+            opacity=0.7
+        ),
+        line=dict(color='black'),
+        fillcolor='white',
+        hovertemplate="Country: %{text}<br>Value: %{y:.1f}%<extra></extra>",
+        text=sex_data['country']
+    ))
+
+# Add horizontal line at median
+median_value = hiv_knowledge_global['obs_value'].median()
+fig.add_shape(
+    type='line',
+    x0='Female',
+    x1='Male',
+    y0=median_value,
+    y1=median_value,
+    line=dict(
+        color='darkgray',
+        width=2,
+        dash='dash'
+    )
+)
+
+# Update layout
+fig.update_layout(
+    title={
+        'text': 'Global Gender Gap in HIV Knowledge<br><sup>Most recent data on youth (15-24) with comprehensive HIV knowledge by country</sup>',
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    yaxis_title='HIV Knowledge (%)',
+    xaxis_title=None,
+    yaxis=dict(range=[0, 70]),
+    plot_bgcolor='white',
+    height=600,
+    showlegend=False,
+)
+
+fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
+
+fig.show()
+```
+
+For comparison, here is the static version of the same visualization:
+
+```{python global_comparison_static}
+#| code-fold: true
+#| code-summary: "Show code for static comparison"
+
+# Create country comparison data
+country_comparison = (
+    hiv_knowledge_global
+    .pivot(index='country', columns='sex', values='obs_value')
+    .reset_index()
+    .dropna()
+)
+
+# Create figure
+fig = go.Figure()
+
+# Add identity line (y = x)
+fig.add_trace(go.Scatter(
+    x=[0, 70],
+    y=[0, 70],
+    mode='lines',
+    line=dict(color='gray', dash='dash'),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+# Add scatter points
+fig.add_trace(go.Scatter(
+    x=country_comparison['Female'],
+    y=country_comparison['Male'],
+    mode='markers',
+    marker=dict(
+        color='#3498db',
+        size=10,
+        opacity=0.7
+    ),
+    text=country_comparison['country'],
+    hovertemplate='<b>%{text}</b><br>' +
+                  'Female Knowledge: %{x:.1f}%<br>' +
+                  'Male Knowledge: %{y:.1f}%<extra></extra>',
+    showlegend=False
+))
+
+# Add trend line with confidence interval
+x = country_comparison['Female'].values
+y = country_comparison['Male'].values
+z = np.polyfit(x, y, 1)
+p = np.poly1d(z)
+
+x_smooth = np.linspace(min(x), max(x), 100)
+y_smooth = p(x_smooth)
+
+# Calculate confidence intervals
+residuals = y - p(x)
+std_dev = np.std(residuals)
+y_upper = y_smooth + 1.96 * std_dev
+y_lower = y_smooth - 1.96 * std_dev
+
+# Add confidence interval
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_upper,
+    mode='lines',
+    line=dict(width=0),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_lower,
+    mode='lines',
+    fill='tonexty',
+    fillcolor='rgba(231, 76, 60, 0.2)',
+    line=dict(width=0),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+# Add trend line
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_smooth,
+    mode='lines',
+    line=dict(color='#e74c3c', width=2),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+# Add annotations for selected points
+mask = ((abs(country_comparison['Male'] - country_comparison['Female']) > 10) |
+        (country_comparison['Female'] > 45) |
+        (country_comparison['Male'] > 45))
+
+for _, row in country_comparison[mask].iterrows():
+    fig.add_annotation(
+        x=row['Female'],
+        y=row['Male'],
+        text=row['country'],
+        showarrow=False,
+        font=dict(size=10),
+        yshift=5
+    )
+
+# Update layout
+fig.update_layout(
+    title={
+        'text': 'HIV Knowledge: Male vs. Female Comparison<br><sup>Each point represents a country\'s most recent data</sup>',
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    xaxis_title='Female Knowledge (%)',
+    yaxis_title='Male Knowledge (%)',
+    xaxis=dict(range=[0, 70], dtick=10),
+    yaxis=dict(range=[0, 70], dtick=10),
+    plot_bgcolor='white',
+    height=600,
+    showlegend=False,
+    annotations=[
+        dict(
+            text='Points above dashed line: Male knowledge exceeds female knowledge',
+            xref='paper',
+            yref='paper',
+            x=0.5,
+            y=-0.15,
+            showarrow=False,
+            font=dict(size=10)
+        )
+    ]
+)
+
+fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
+
+fig.show()
+```
+
+These visualizations reveal several important patterns in global HIV knowledge:
+
+1. **Persistent Gender Gap**: The boxplots show that, on average, males tend to have higher levels of HIV knowledge than females across countries. The median knowledge level for males is noticeably higher than for females.
+
+2. **Wide Variation Between Countries**: There is substantial variation in HIV knowledge levels across countries, with some countries showing knowledge rates above 50% while others fall below 5%.
+
+3. **Country-Level Gender Disparities**: The comparison plot clearly shows that in most countries (points falling above the dashed line), males have higher knowledge levels than females. However, there are some exceptions where female knowledge exceeds male knowledge.
+
+4. **Positive Correlation**: There is a strong positive correlation between male and female knowledge levels within countries. Countries that do well in educating one gender about HIV tend to also do well with the other gender.
+
+5. **Regional Patterns**: Some of the highest-performing countries (labeled in the upper right) are clustered in Sub-Saharan Africa, where HIV prevalence is higher and education efforts have been more intensive.
+
+These findings highlight the need for targeted educational interventions that address gender-specific barriers to HIV knowledge, with particular attention to countries and regions where overall knowledge levels remain low.
+
+## [Child Stunting Burden by Country]{style="font-family: serif"}
+
+This map displays the percentage of children under 5 affected by stunting (low height-for-age) in Africa and Asia, the two continents with the highest burden of child malnutrition. By focusing on these regions, we can better visualize where interventions are most urgently needed and identify patterns of child nutrition challenges.
+
+::: {.panel-tabset}
+
+## Africa
+
+```{python stunting_map_africa}
+#| code-fold: true
+#| code-summary: "Show code for Africa map"
+
+# Load world map data for Africa
+world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
+africa = world[world['CONTINENT'] == 'Africa'].copy()
+
+# Filter stunting data
+stunting_data = combined_indicators[
+    (combined_indicators['indicator'].str.contains('height.for.age', case=False, na=False) | 
+     combined_indicators['indicator'].str.contains('stunting', case=False, na=False)) &
+    (~combined_indicators['obs_value'].isna()) &
+    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
+]
+
+# Get most recent stunting data for each country
+recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
+
+# Create a country name mapping dictionary
+country_mapping = {
+    "Congo, Democratic Republic of the": "Democratic Republic of the Congo",
+    "Congo, the Democratic Republic of the": "Democratic Republic of the Congo",
+    "Congo": "Republic of the Congo",
+    "Tanzania, United Republic of": "United Republic of Tanzania",
+    "Swaziland": "eSwatini",
+    "Côte d'Ivoire": "Ivory Coast",
+    "Ivory Coast": "Ivory Coast",
+    "Bolivia, Plurinational State of": "Bolivia",
+    "Iran, Islamic Republic of": "Iran",
+    "Korea, Democratic People's Republic of": "North Korea",
+    "Korea, Republic of": "South Korea",
+    "Lao People's Democratic Republic": "Laos",
+    "Syrian Arab Republic": "Syria",
+    "Viet Nam": "Vietnam",
+    "Myanmar": "Burma"
+}
+
+# Apply country name mapping
+recent_stunting['map_country'] = recent_stunting['country'].apply(
+    lambda x: country_mapping.get(x, x)
+)
+
+# Merge stunting data with map data
+africa = africa.merge(
+    recent_stunting[['map_country', 'obs_value']], 
+    left_on='ADMIN', 
+    right_on='map_country', 
+    how='left'
+)
+
+# Convert GeoDataFrame to GeoJSON-like format for Plotly
+africa_json = json.loads(africa.to_json())
+
+# Create choropleth map
+fig = px.choropleth(
+    recent_stunting,
+    locations='alpha_3_code',
+    color='obs_value',
+    hover_name='country',
+    color_continuous_scale='RdYlBu_r',
+    range_color=[0, 100],  # Set range to 0-100 for percentages
+    labels={'obs_value': 'Stunting Rate (%)'},
+    title='Child Stunting Rates by Country',
+    scope='africa'
+)
+
+# Update layout
+fig.update_layout(
+    title_x=0.5,
+    geo=dict(
+        showframe=False,
+        showcoastlines=True,
+        projection_type='equirectangular'
+    ),
+    width=800,
+    height=600,
+    margin=dict(t=50, b=0, l=0, r=0)
+)
+
+# Show the map
+fig.show()
+```
+
+## Asia
+
+```{python stunting_map_asia}
+#| code-fold: true
+#| code-summary: "Show code for Asia map"
+
+# Load world map data for Asia
+world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
+asia = world[world['CONTINENT'] == 'Asia'].copy()
+
+# Create a country name mapping dictionary for Asia
+asia_country_mapping = {
+    "Iran, Islamic Republic of": "Iran",
+    "Korea, Democratic People's Republic of": "North Korea",
+    "Korea, Republic of": "South Korea",
+    "Lao People's Democratic Republic": "Laos",
+    "Syrian Arab Republic": "Syria",
+    "Viet Nam": "Vietnam",
+    "Myanmar": "Burma"
+}
+
+# Apply country name mapping
+recent_stunting = combined_indicators[
+    (combined_indicators['country'].isin(asia_country_mapping.keys())) &
+    (combined_indicators['indicator'].str.contains('stunting|height.for.age', case=False, na=False)) &
+    (~combined_indicators['obs_value'].isna()) &
+    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
+]
+
+recent_stunting['map_country'] = recent_stunting['country'].apply(
+    lambda x: asia_country_mapping.get(x, x)
+)
+
+# Merge stunting data with map data
+asia = asia.merge(
+    recent_stunting[['map_country', 'obs_value']],
+    left_on='ADMIN',
+    right_on='map_country',
+    how='left'
+)
+
+# Convert GeoDataFrame to GeoJSON-like format for Plotly
+asia_json = json.loads(asia.to_json())
+
+# Create choropleth map
+fig = px.choropleth(
+    recent_stunting,
+    locations='alpha_3_code',
+    color='obs_value',
+    hover_name='country',
+    color_continuous_scale='RdYlBu_r',
+    range_color=[0, 100],  # Set range to 0-100 for percentages
+    labels={'obs_value': 'Stunting Rate (%)'},
+    title='Child Stunting Rates by Country',
+    scope='asia'
+)
+
+# Update layout
+fig.update_layout(
+    title_x=0.5,
+    geo=dict(
+        showframe=False,
+        showcoastlines=True,
+        projection_type='equirectangular'
+    ),
+    width=800,
+    height=600,
+    margin=dict(t=50, b=0, l=0, r=0)
+)
+
+# Show the map
+fig.show()
+```
+
+:::
+
+These maps illustrate the geographic distribution of child stunting across Africa and Asia, revealing distinct regional patterns:
+
+1. **Concentration in Sub-Saharan Africa**: Countries in the Sahel region and Central Africa show some of the highest stunting rates, with over 30% of children affected in many nations.
+
+2. **South Asian hotspot**: Countries like India, Pakistan, Bangladesh, and Nepal form a significant hotspot of child stunting, with India displaying particularly concerning rates.
+
+3. **Variation within regions**: Both continents show significant variation, with some countries making substantial progress while neighboring nations continue to struggle.
+
+The burden of stunting in these two continents is particularly concerning as they collectively account for over 80% of all stunted children worldwide. Targeted interventions in the darkest green areas represent opportunities for significant improvements in global child nutrition outcomes.
+
+## [Progress in Reducing Child Stunting]{style="font-family: serif"}
+
+This area chart tracks Bangladesh's progress in reducing child stunting over time. The visualization demonstrates the country's commitment to improving child nutrition and highlights the effectiveness of targeted interventions implemented over the years. The downward trend represents real improvements in the lives of children and showcases a public health success story that other countries might learn from.
+
+```{python bangladesh_stunting_progress}
+#| code-fold: true
+#| code-summary: "Show code for Bangladesh stunting progress"
+
+# Filter Bangladesh stunting data
+bangladesh_stunting = combined_indicators[
+    (combined_indicators['country'] == 'Bangladesh') &
+    (combined_indicators['indicator'].str.contains('stunting|height.for.age', case=False, na=False)) &
+    (~combined_indicators['indicator'].str.contains('wasting|weight.for.height', case=False, na=False)) &
+    (~combined_indicators['obs_value'].isna()) &
+    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
+]
+
+# Clean and prepare data
+bangladesh_stunting = bangladesh_stunting.copy()
+bangladesh_stunting['obs_value'] = bangladesh_stunting['obs_value'].apply(
+    lambda x: x/100 if x > 100 else x
+)
+bangladesh_stunting['obs_value'] = bangladesh_stunting['obs_value'].apply(
+    lambda x: 100 if x > 100 else x
+)
+bangladesh_stunting = bangladesh_stunting.sort_values('time_period')
+
+# Create area chart
+fig = go.Figure()
+
+# Add area trace
+fig.add_trace(go.Scatter(
+    x=bangladesh_stunting['time_period'],
+    y=bangladesh_stunting['obs_value'],
+    fill='tozeroy',
+    fillcolor='rgba(0, 100, 0, 0.7)',
+    line=dict(color='darkgreen', width=2),
+    mode='lines',
+    name='Stunting Rate',
+    hovertemplate='Year: %{x}<br>Stunting Rate: %{y:.1f}%<extra></extra>'
+))
+
+# Add data points
+fig.add_trace(go.Scatter(
+    x=bangladesh_stunting['time_period'],
+    y=bangladesh_stunting['obs_value'],
+    mode='markers',
+    marker=dict(color='darkgreen', size=8),
+    showlegend=False,
+    hovertemplate='Year: %{x}<br>Stunting Rate: %{y:.1f}%<extra></extra>'
+))
+
+# Add value labels for selected points
+n = max(1, len(bangladesh_stunting) // 8)  # Show about 8 labels
+for i in range(0, len(bangladesh_stunting), n):
+    fig.add_annotation(
+        x=bangladesh_stunting.iloc[i]['time_period'],
+        y=bangladesh_stunting.iloc[i]['obs_value'],
+        text=f"{bangladesh_stunting.iloc[i]['obs_value']:.1f}%",
+        showarrow=False,
+        yshift=10,
+        font=dict(color='darkgreen', size=10)
+    )
+
+# Update layout
+fig.update_layout(
+    title={
+        'text': 'Progress in Reducing Child Stunting in Bangladesh<br><sup>Percentage of children under 5</sup>',
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    xaxis_title='Year',
+    yaxis_title='Stunting Rate (%)',
+    yaxis=dict(range=[0, 100], dtick=10),
+    plot_bgcolor='white',
+    height=500,
+    showlegend=False,
+    annotations=[
+        dict(
+            text='Source: UNICEF Child Indicator Data',
+            xref='paper',
+            yref='paper',
+            x=0.5,
+            y=-0.15,
+            showarrow=False,
+            font=dict(size=10)
+        )
+    ]
+)
+
+fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
+
+fig.show()
+```
+
+This area chart illustrates Bangladesh's remarkable journey in reducing the prevalence of child stunting over time. The dark green area represents the percentage of children under 5 who are stunted (height-for-age below -2 standard deviations from the median).
+
+The downward slope of the chart tells a positive story of nutrition improvement in Bangladesh, which has been achieved through a combination of:
+
+1. **Targeted nutrition interventions** - Including micronutrient supplementation, promotion of exclusive breastfeeding, and complementary feeding practices
+
+2. **Broader development progress** - Economic growth, improved food security, and enhanced maternal education
+
+3. **Health system strengthening** - Better access to healthcare services, improved water and sanitation facilities, and increased immunization coverage
+
+Bangladesh's progress serves as an inspiring example for other countries facing similar challenges. The consistent decline demonstrates that with sustained commitment and evidence-based approaches, significant improvements in child nutrition outcomes are achievable even in resource-constrained settings.
+
+## [Rwanda's Progress in HIV Knowledge]{style="font-family: serif"}
+
+This visualization shows the trend of HIV knowledge in Rwanda over time, comparing male and female youth (aged 15-24). Rwanda has made significant progress in HIV education, with both genders showing substantial improvement over the years.
+
+```{python rwanda_hiv_trends}
+#| code-fold: true
+#| code-summary: "Show code for Rwanda trends"
+
+# Filter data for Rwanda
+rwanda_data = hiv_knowledge_data[
+    (hiv_knowledge_data['country'] == 'Rwanda') &
+    (hiv_knowledge_data['sex'].isin(['Female', 'Male']))
+].sort_values('time_period')
+
+# Create figure with larger size
+plt.figure(figsize=(12, 8))
+
+# Plot lines and points for each gender
+for sex, color in zip(['Female', 'Male'], ['#F8766D', '#619CFF']):
+    sex_data = rwanda_data[rwanda_data['sex'] == sex]
+    plt.plot(sex_data['time_period'], sex_data['obs_value'], 
+             marker='o', markersize=8, linewidth=2,
+             color=color, label=sex)
+
+# Customize the plot
+plt.title('HIV Knowledge Trends in Rwanda', fontsize=16, pad=20)
+plt.xlabel('Year', fontsize=12)
+plt.ylabel('Knowledge Rate (%)', fontsize=12)
+
+# Set axis limits and grid
+plt.ylim(0, 70)
+plt.grid(True, alpha=0.3)
+
+# Add legend
+plt.legend(fontsize=12)
+
+# Set background color
+plt.gca().set_facecolor('white')
+plt.gcf().set_facecolor('white')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plot
+plt.show()
+```
+
+The visualization reveals that Rwanda has made remarkable progress in HIV education over the past two decades. Both male and female youth have shown significant improvement in their HIV knowledge levels, with the gender gap remaining relatively small. This success can be attributed to Rwanda's comprehensive HIV education programs and health initiatives.
+
+## [Conclusion]{style="font-family: serif"}
+
+The analysis **reveals persistent and significant challenges** in both child stunting and HIV awareness among youth worldwide. **Stunting remains highly concentrated in South Asia and Sub-Saharan Africa**, with countries such as India, Bangladesh, and several Central African nations bearing the greatest burden. 
+
+Despite some notable progress, represents by Bangladesh's steady reduction in stunting rates, **millions of children continue to face the lifelong consequences of undernutrition**. At the same time, global HIV knowledge among youth displays stark disparities, with leading countries in Eastern and Southern Africa achieving much higher awareness rates than those at the bottom of the scale.
+
+Gender gaps further compound these issues, as **males generally possess higher HIV knowledge than females** in most countries.
+
+These findings emphasised the urgent need for targeted, region-specific interventions that address both the immediate and systemic factors driving these public health challenges.
+
+## [Solutions]{style="font-family: serif"}
+
+1. Prioritize **targeted investments** in countries and regions with the highest rates of child stunting and lowest HIV knowledge, particularly in South Asia and Sub-Saharan Africa.
+2. Develop and **implement gender-sensitive education campaigns** to close the HIV knowledge gap between males and females, ensuring equitable access to information for all youth.
+3. **Integrate nutrition initiatives** with broader development strategies, including improving maternal education, healthcare access, water and sanitation, and food security.
+4.Establish **robust data monitoring systems to track progress**, identify emerging gaps, and enable adaptive, evidence-based policymaking.
+5. Foster **multisectoral collaboration** among governments, NGOs, and international organizations to address both immediate needs and the underlying social determinants of health.
+6. Promote the **exchange of best practices** by learning from successful countries, adapting proven interventions to local contexts, and scaling up effective solutions.
+
+By acting on these recommendations, we can accelerate progress and help more children grow up healthy and strong.
+
