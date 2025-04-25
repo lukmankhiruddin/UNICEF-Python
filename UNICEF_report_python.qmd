@@ -159,11 +159,17 @@ fig.add_trace(go.Bar(
     marker_color=COLORS['green'],
     text=top_5_countries['obs_value'].round(1).astype(str) + '%',
     textposition='outside',
+    hovertemplate='<b>%{y}</b><br>HIV Knowledge: %{x:.1f}%<extra></extra>',
+    hoverlabel=dict(
+        bgcolor='white',
+        font_size=12,
+        font_family='Arial'
+    )
 ))
 
 fig.update_layout(
     title={
-        'text': 'Top 5 Countries with Highest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
+        'text': 'Top 5 Countries with Highest HIV Knowledge',
         'x': 0.5,
         'xanchor': 'center'
     },
@@ -200,11 +206,17 @@ fig.add_trace(go.Bar(
     marker_color=COLORS['green'],
     text=bottom_5_countries['obs_value'].round(1).astype(str) + '%',
     textposition='outside',
+    hovertemplate='<b>%{y}</b><br>HIV Knowledge: %{x:.1f}%<extra></extra>',
+    hoverlabel=dict(
+        bgcolor='white',
+        font_size=12,
+        font_family='Arial'
+    )
 ))
 
 fig.update_layout(
     title={
-        'text': 'Bottom 5 Countries with Lowest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
+        'text': 'Bottom 5 Countries with Lowest HIV Knowledge',
         'x': 0.5,
         'xanchor': 'center'
     },
@@ -266,8 +278,14 @@ top_trend_countries = country_data_counts.head(4)['country'].tolist()
 # Filter data for top countries
 trend_data = hiv_knowledge_data[hiv_knowledge_data['country'].isin(top_trend_countries)]
 
-# Create subplots
-fig = make_subplots(rows=2, cols=2, subplot_titles=top_trend_countries)
+# Create subplots with more vertical space
+fig = make_subplots(
+    rows=2, 
+    cols=2, 
+    subplot_titles=top_trend_countries,
+    vertical_spacing=0.2,  # Increase vertical spacing between plots
+    horizontal_spacing=0.15  # Increase horizontal spacing between plots
+)
 
 # Plot each country
 for i, country in enumerate(top_trend_countries):
@@ -287,22 +305,25 @@ for i, country in enumerate(top_trend_countries):
                 line=dict(color=color),
                 mode='lines+markers',
                 showlegend=(i == 0),  # Show legend only for first country
+                hovertemplate='Year: %{x}<br>' + sex + ': %{y:.1f}%<extra></extra>'
             ),
             row=row, col=col
         )
 
 fig.update_layout(
     title={
-        'text': 'HIV Knowledge Trends by Sex & Country<br><sup>Percentage of youth (15-24) with comprehensive knowledge</sup>',
+        'text': 'HIV Knowledge Trends by Sex & Country',
         'x': 0.5,
-        'xanchor': 'center'
+        'xanchor': 'center',
+        'y': 0.95,
+        'yanchor': 'top'
     },
-    height=600,
+    height=800,
     showlegend=True,
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=-0.2,
+        y=-0.15,
         xanchor="center",
         x=0.5
     ),
@@ -311,8 +332,32 @@ fig.update_layout(
 
 # Update all axes
 for i in range(1, 5):
-    fig.update_yaxes(title_text='%', range=[0, 60], row=(i-1)//2 + 1, col=(i-1)%2 + 1)
-    fig.update_xaxes(title_text='Year', row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+    row = (i-1)//2 + 1
+    col = (i-1)%2 + 1
+    
+    # Update y-axes
+    fig.update_yaxes(
+        title_text='%', 
+        range=[0, 60], 
+        row=row, 
+        col=col,
+        gridcolor=COLORS['grid'],
+        zeroline=False
+    )
+    
+    # Update x-axes
+    fig.update_xaxes(
+        title_text='Year', 
+        row=row, 
+        col=col,
+        gridcolor=COLORS['grid'],
+        zeroline=False
+    )
+
+# Update subplot titles font and position
+for i in fig['layout']['annotations']:
+    i['font'] = dict(size=12, color='black')
+    i['y'] = i['y'] + 0.03  # Move subplot titles up slightly
 
 fig.show()
 ```
@@ -385,7 +430,7 @@ fig.add_shape(
 # Update layout
 fig.update_layout(
     title={
-        'text': 'Global Gender Gap in HIV Knowledge<br><sup>Most recent data on youth (15-24) with comprehensive HIV knowledge by country</sup>',
+        'text': 'Global Gender Gap in HIV Knowledge',
         'x': 0.5,
         'xanchor': 'center'
     },
@@ -499,7 +544,7 @@ fig.update_geos(
 
 fig.update_layout(
     title={
-        'text': 'Child Stunting Burden in Africa<br><sup>Percentage of children under 5</sup>',
+        'text': 'Child Stunting Burden in Africa',
         'x': 0.5,
         'xanchor': 'center'
     },
@@ -519,82 +564,107 @@ fig.show()
 #| code-fold: true
 #| code-summary: "Show code for Asia map"
 
-# Load world map data for Asia
+# Load world map data
 world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
-asia = world[world['CONTINENT'] == 'Asia'].copy()
 
-# Create a country name mapping dictionary for Asia
-asia_country_mapping = {
-    "Iran, Islamic Republic of": "Iran",
-    "Korea, Democratic People's Republic of": "North Korea",
-    "Korea, Republic of": "South Korea",
-    "Lao People's Democratic Republic": "Laos",
-    "Syrian Arab Republic": "Syria",
-    "Viet Nam": "Vietnam",
-    "Myanmar": "Burma"
+# Define Asian countries we want to include
+asian_countries = [
+    'Afghanistan', 'Armenia', 'Azerbaijan', 'Bahrain', 'Bangladesh', 'Bhutan', 
+    'Brunei', 'Cambodia', 'China', 'Cyprus', 'Georgia', 'India', 'Indonesia', 
+    'Iran', 'Iraq', 'Israel', 'Japan', 'Jordan', 'Kazakhstan', 'Kuwait', 
+    'Kyrgyzstan', 'Laos', 'Lebanon', 'Malaysia', 'Maldives', 'Mongolia', 
+    'Myanmar', 'Nepal', 'North Korea', 'Oman', 'Pakistan', 'Palestine', 
+    'Philippines', 'Qatar', 'Saudi Arabia', 'Singapore', 'South Korea', 
+    'Sri Lanka', 'Syria', 'Taiwan', 'Tajikistan', 'Thailand', 'Timor-Leste', 
+    'Turkey', 'Turkmenistan', 'United Arab Emirates', 'Uzbekistan', 'Vietnam', 
+    'Yemen'
+]
+
+# Filter for Asian countries
+asia = world[world['ADMIN'].isin(asian_countries)].copy()
+
+# Create a country name mapping dictionary
+country_name_mapping = {
+    'Iran (Islamic Republic of)': 'Iran',
+    "Korea, Democratic People's Republic of": 'North Korea',
+    'Korea, Republic of': 'South Korea',
+    "Lao People's Democratic Republic": 'Laos',
+    'Syrian Arab Republic': 'Syria',
+    'Viet Nam': 'Vietnam',
+    'Myanmar (formerly Burma)': 'Myanmar',
+    'Brunei Darussalam': 'Brunei',
+    'State of Palestine': 'Palestine',
+    'Taiwan, Province of China': 'Taiwan'
 }
 
-# Apply country name mapping
-recent_stunting = combined_indicators[
-    (combined_indicators['country'].isin(asia_country_mapping.keys())) &
+# Get the most recent stunting data for each country
+stunting_data = combined_indicators[
     (combined_indicators['indicator'].str.contains('stunting|height.for.age', case=False, na=False)) &
     (~combined_indicators['obs_value'].isna()) &
     ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
 ]
 
-recent_stunting['map_country'] = recent_stunting['country'].apply(
-    lambda x: asia_country_mapping.get(x, x)
+recent_stunting = (stunting_data
+    .sort_values('time_period', ascending=False)
+    .groupby('country')
+    .first()
+    .reset_index()
 )
 
-# Merge stunting data with map data
+# Map country names
+recent_stunting['country'] = recent_stunting['country'].replace(country_name_mapping)
+
+# Merge with map data
 asia = asia.merge(
-    recent_stunting[['map_country', 'obs_value']],
+    recent_stunting[['country', 'obs_value']],
     left_on='ADMIN',
-    right_on='map_country',
+    right_on='country',
     how='left'
 )
 
-# Convert GeoDataFrame to GeoJSON-like format for Plotly
-asia_json = json.loads(asia.to_json())
+# Create the choropleth map
+fig = go.Figure()
 
-# Create list of features for hover text
-hover_text = []
-for idx, row in asia.iterrows():
-    hover_text.append(f"Country: {row['ADMIN']}<br>" +
-                     f"Stunting Rate: {row['obs_value']:.1f}%" if pd.notna(row['obs_value'])
-                     else f"Country: {row['ADMIN']}<br>No data available")
-
-# Create choropleth map
-fig = go.Figure(data=go.Choropleth(
-    geojson=asia_json,
+# Add the choropleth trace
+fig.add_trace(go.Choropleth(
+    geojson=json.loads(asia.to_json()),
     locations=asia.index,
     z=asia['obs_value'],
     colorscale='YlOrRd',
-    colorbar_title="Stunting Rate (%)",
-    text=hover_text,
-    hoverinfo="text",
+    colorbar_title='Stunting Rate (%)',
+    hovertemplate='<b>%{text}</b><br>Stunting Rate: %{z:.1f}%<extra></extra>',
+    text=asia['ADMIN'],
 ))
 
+# Update the map layout
 fig.update_geos(
-    projection_type="equirectangular",
     visible=False,
+    projection_type='mercator',
+    landcolor='lightgray',
+    showland=True,
     showcountries=True,
-    countrycolor="gray",
+    countrycolor='gray',
     showcoastlines=True,
-    coastlinecolor="gray",
+    coastlinecolor='gray',
+    fitbounds='locations',
+    center=dict(lon=90, lat=30),  # Center on Asia
+    resolution=110
 )
 
+# Update the figure layout
 fig.update_layout(
     title={
-        'text': 'Child Stunting Burden in Asia<br><sup>Percentage of children under 5</sup>',
+        'text': 'Child Stunting Burden in Asia',
         'x': 0.5,
         'xanchor': 'center'
     },
+    height=600,
+    margin={"r":0,"t":30,"l":0,"b":0},
     geo=dict(
         scope='asia',
-        showframe=False,
-    ),
-    height=600,
+        projection_scale=2,  # Zoom level
+        center=dict(lon=90, lat=30)  # Center on Asia
+    )
 )
 
 fig.show()
@@ -679,7 +749,7 @@ for i in range(0, len(bangladesh_stunting), n):
 # Update layout
 fig.update_layout(
     title={
-        'text': 'Progress in Reducing Child Stunting in Bangladesh<br><sup>Percentage of children under 5</sup>',
+        'text': 'Progress in Reducing Child Stunting in Bangladesh',
         'x': 0.5,
         'xanchor': 'center'
     },
@@ -882,7 +952,7 @@ fig.add_trace(go.Scatter(
 # Update layout
 fig.update_layout(
     title={
-        'text': 'HIV Knowledge: Male vs. Female Comparison<br><sup>Each point represents a country\'s most recent data</sup>',
+        'text': 'HIV Knowledge: Male vs. Female Comparison',
         'x': 0.5,
         'xanchor': 'center'
     },
