@@ -841,55 +841,6 @@ The downward slope of the chart tells a positive story of nutrition improvement 
 
 Bangladesh's progress serves as an inspiring example for other countries facing similar challenges. The consistent decline demonstrates that with sustained commitment and evidence-based approaches, significant improvements in child nutrition outcomes are achievable even in resource-constrained settings.
 
-## [Rwanda's Progress in HIV Knowledge]{style="font-family: serif"}
-
-This visualization shows the trend of HIV knowledge in Rwanda over time, comparing male and female youth (aged 15-24). Rwanda has made significant progress in HIV education, with both genders showing substantial improvement over the years.
-
-```{python rwanda_hiv_trends}
-#| code-fold: true
-#| code-summary: "Show code for Rwanda trends"
-
-# Filter data for Rwanda
-rwanda_data = hiv_knowledge_data[
-    (hiv_knowledge_data['country'] == 'Rwanda') &
-    (hiv_knowledge_data['sex'].isin(['Female', 'Male']))
-].sort_values('time_period')
-
-# Create figure with larger size
-plt.figure(figsize=(12, 8))
-
-# Plot lines and points for each gender
-for sex, color in zip(['Female', 'Male'], ['#F8766D', '#619CFF']):
-    sex_data = rwanda_data[rwanda_data['sex'] == sex]
-    plt.plot(sex_data['time_period'], sex_data['obs_value'], 
-             marker='o', markersize=8, linewidth=2,
-             color=color, label=sex)
-
-# Customize the plot
-plt.title('HIV Knowledge Trends in Rwanda', fontsize=16, pad=20)
-plt.xlabel('Year', fontsize=12)
-plt.ylabel('Knowledge Rate (%)', fontsize=12)
-
-# Set axis limits and grid
-plt.ylim(0, 70)
-plt.grid(True, alpha=0.3)
-
-# Add legend
-plt.legend(fontsize=12)
-
-# Set background color
-plt.gca().set_facecolor('white')
-plt.gcf().set_facecolor('white')
-
-# Adjust layout
-plt.tight_layout()
-
-# Show the plot
-plt.show()
-```
-
-The visualization reveals that Rwanda has made remarkable progress in HIV education over the past two decades. Both male and female youth have shown significant improvement in their HIV knowledge levels, with the gender gap remaining relatively small. This success can be attributed to Rwanda's comprehensive HIV education programs and health initiatives.
-
 ## [Conclusion]{style="font-family: serif"}
 
 The analysis **reveals persistent and significant challenges** in both child stunting and HIV awareness among youth worldwide. **Stunting remains highly concentrated in South Asia and Sub-Saharan Africa**, with countries such as India, Bangladesh, and several Central African nations bearing the greatest burden. 
