@@ -1,0 +1,96 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Growing Hope: Understanding Child Growth & HIV Awareness Worldwide\"\n",
+        "format:\n",
+        "  html:\n",
+        "    toc: false\n",
+        "    theme: default\n",
+        "execute:\n",
+        "  echo: true\n",
+        "  warning: true\n",
+        "  message: true\n",
+        "  error: true\n",
+        "---\n",
+        "\n",
+        "Dive into a comprehensive analysis of critical health and development metrics, centered on child stunting and HIV awareness. This report leverages UNICEF data to explore global patterns and relationships between these crucial indicators."
+      ],
+      "id": "7a046ccf"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Load required libraries\n",
+        "import pandas as pd\n",
+        "from plotnine import *\n",
+        "import os\n",
+        "\n",
+        "# Debug information\n",
+        "print(f\"Current directory: {os.getcwd()}\")\n",
+        "print(f\"File exists: {os.path.exists('Indicator_Combined.csv')}\")\n",
+        "\n",
+        "try:\n",
+        "    # Correctly read CSV file\n",
+        "    df = pd.read_csv(\"Indicator_Combined.csv\")\n",
+        "    print(f\"Successfully loaded data with {df.shape[0]} rows and {df.shape[1]} columns\")\n",
+        "    \n",
+        "    # Display column names to help debugging\n",
+        "    print(f\"Columns: {df.columns.tolist()}\")\n",
+        "    \n",
+        "    # Filter data for HIV knowledge\n",
+        "    hiv = df[df['indicator'].str.contains('HIV', na=False)]\n",
+        "    print(f\"Found {len(hiv)} rows with HIV data\")\n",
+        "    \n",
+        "    # Get latest data point for each country/sex combination\n",
+        "    latest_hiv = hiv.sort_values('time_period').groupby(['country', 'sex'], as_index=False).last()\n",
+        "    print(f\"Final data has {len(latest_hiv)} rows with {latest_hiv['country'].nunique()} countries\")\n",
+        "    \n",
+        "    # Create visualization\n",
+        "    if len(latest_hiv) > 0:\n",
+        "        plot = (ggplot(latest_hiv, aes(x='country', y='obs_value', fill='sex'))\n",
+        "         + geom_col(position='dodge')\n",
+        "         + labs(title='HIV Knowledge by Country and Sex', x='', y='Percentage')\n",
+        "         + theme(axis_text_x=element_text(rotation=90, hjust=1))\n",
+        "         + scale_fill_manual(values=[\"#1f77b4\", \"#ff7f0e\"]))\n",
+        "        \n",
+        "        print(plot)\n",
+        "    else:\n",
+        "        print(\"No data available to plot\")\n",
+        "    \n",
+        "except Exception as e:\n",
+        "    print(f\"Error: {e}\")"
+      ],
+      "id": "15a80f7e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "This corrected code:\n",
+        "1. Uses `pd.read_csv()` to properly read a CSV file\n",
+        "2. Adds debug info to help troubleshoot any issues\n",
+        "3. Includes error handling to see what might go wrong\n",
+        "4. Creates the bar chart using plotnine if data is available\n",
+        "\n",
+        "If your data is actually in Excel format despite having a .csv extension, then you would need to rename it to .xlsx or use the Excel-specific parameters with pd.read_csv() like `pd.read_csv(\"Indicator_Combined.csv\", sep='\\t')` or similar depending on how the file is formatted."
+      ],
+      "id": "03ac208d"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
