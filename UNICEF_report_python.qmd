@@ -42,6 +42,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import geopandas as gpd
 import json
+import matplotlib.pyplot as plt
 
 # Define color scheme to match R's ggplot2
 COLORS = {
@@ -144,10 +145,10 @@ recent_hiv_knowledge = hiv_knowledge_data.sort_values('time_period', ascending=F
 
 # Calculate average knowledge by country and sort
 avg_knowledge = recent_hiv_knowledge.groupby('country')['obs_value'].mean().reset_index()
-avg_knowledge = avg_knowledge.sort_values('obs_value', ascending=True)  # Ascending for horizontal bars
+avg_knowledge = avg_knowledge.sort_values('obs_value', ascending=True)
 
 # Get top 5 countries
-top_5_countries = avg_knowledge.tail(5)  # Using tail because we reversed the order
+top_5_countries = avg_knowledge.tail(5)
 
 # Create interactive bar chart
 fig = go.Figure()
@@ -156,32 +157,34 @@ fig.add_trace(go.Bar(
     x=top_5_countries['obs_value'],
     y=top_5_countries['country'],
     orientation='h',
-    marker_color=COLORS['green'],
-    text=top_5_countries['obs_value'].round(1).astype(str) + '%',
+    marker_color='darkgreen',
+    text=[f"{x:.1f}%" for x in top_5_countries['obs_value']],
     textposition='outside',
-    hovertemplate='<b>%{y}</b><br>HIV Knowledge: %{x:.1f}%<extra></extra>',
-    hoverlabel=dict(
-        bgcolor='white',
-        font_size=12,
-        font_family='Arial'
-    )
+    hovertemplate="<b>%{y}</b><br>Knowledge Rate: %{x:.1f}%<extra></extra>"
 ))
 
 fig.update_layout(
     title={
         'text': 'Top 5 Countries with Highest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
         'x': 0.5,
-        'xanchor': 'center'
+        'xanchor': 'center',
+        'font': {'size': 16, 'color': 'black'}
     },
     xaxis_title='Percentage (%)',
     yaxis_title=None,
-    xaxis=dict(range=[0, 75]),
+    xaxis=dict(
+        range=[0, 75],
+        tickformat='.0f',
+        ticksuffix='%'
+    ),
     plot_bgcolor='white',
+    paper_bgcolor='white',
     showlegend=False,
     height=400,
+    margin=dict(t=80, b=50, l=0, r=50)
 )
 
-fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_xaxes(gridcolor='#cccccc', zeroline=False)
 fig.update_yaxes(gridcolor='white')
 
 fig.show()
@@ -203,32 +206,34 @@ fig.add_trace(go.Bar(
     x=bottom_5_countries['obs_value'],
     y=bottom_5_countries['country'],
     orientation='h',
-    marker_color=COLORS['green'],
-    text=bottom_5_countries['obs_value'].round(1).astype(str) + '%',
+    marker_color='darkgreen',
+    text=[f"{x:.1f}%" for x in bottom_5_countries['obs_value']],
     textposition='outside',
-    hovertemplate='<b>%{y}</b><br>HIV Knowledge: %{x:.1f}%<extra></extra>',
-    hoverlabel=dict(
-        bgcolor='white',
-        font_size=12,
-        font_family='Arial'
-    )
+    hovertemplate="<b>%{y}</b><br>Knowledge Rate: %{x:.1f}%<extra></extra>"
 ))
 
 fig.update_layout(
     title={
         'text': 'Bottom 5 Countries with Lowest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
         'x': 0.5,
-        'xanchor': 'center'
+        'xanchor': 'center',
+        'font': {'size': 16, 'color': 'black'}
     },
     xaxis_title='Percentage (%)',
     yaxis_title=None,
-    xaxis=dict(range=[0, 75]),
+    xaxis=dict(
+        range=[0, 75],
+        tickformat='.0f',
+        ticksuffix='%'
+    ),
     plot_bgcolor='white',
+    paper_bgcolor='white',
     showlegend=False,
     height=400,
+    margin=dict(t=80, b=50, l=0, r=50)
 )
 
-fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_xaxes(gridcolor='#cccccc', zeroline=False)
 fig.update_yaxes(gridcolor='white')
 
 fig.show()
@@ -279,16 +284,22 @@ top_trend_countries = country_data_counts.head(4)['country'].tolist()
 trend_data = hiv_knowledge_data[hiv_knowledge_data['country'].isin(top_trend_countries)]
 
 # Create subplots
-fig = make_subplots(rows=2, cols=2, subplot_titles=top_trend_countries)
+fig = make_subplots(
+    rows=2, cols=2,
+    subplot_titles=top_trend_countries,
+    vertical_spacing=0.15,
+    horizontal_spacing=0.1
+)
 
 # Plot each country
+colors = {'Female': '#F8766D', 'Male': '#619CFF'}  # Match R's default colors
 for i, country in enumerate(top_trend_countries):
     row = i // 2 + 1
     col = i % 2 + 1
     
     country_data = trend_data[trend_data['country'] == country]
     
-    for sex, color in zip(['Female', 'Male'], [COLORS['red'], COLORS['blue']]):
+    for sex in ['Female', 'Male']:
         sex_data = country_data[country_data['sex'] == sex]
         
         fig.add_trace(
@@ -296,9 +307,11 @@ for i, country in enumerate(top_trend_countries):
                 x=sex_data['time_period'],
                 y=sex_data['obs_value'],
                 name=sex,
-                line=dict(color=color),
+                line=dict(color=colors[sex], width=2),
                 mode='lines+markers',
-                showlegend=(i == 0),  # Show legend only for first country
+                marker=dict(size=8),
+                showlegend=(i == 0),
+                hovertemplate=f"{sex}: %{{y:.1f}}%<extra></extra>"
             ),
             row=row, col=col
         )
@@ -307,7 +320,8 @@ fig.update_layout(
     title={
         'text': 'HIV Knowledge Trends by Sex & Country<br><sup>Percentage of youth (15-24) with comprehensive knowledge</sup>',
         'x': 0.5,
-        'xanchor': 'center'
+        'xanchor': 'center',
+        'font': {'size': 16, 'color': 'black'}
     },
     height=600,
     showlegend=True,
@@ -318,13 +332,29 @@ fig.update_layout(
         xanchor="center",
         x=0.5
     ),
-    plot_bgcolor='white'
+    plot_bgcolor='white',
+    paper_bgcolor='white'
 )
 
 # Update all axes
 for i in range(1, 5):
-    fig.update_yaxes(title_text='%', range=[0, 60], row=(i-1)//2 + 1, col=(i-1)%2 + 1)
-    fig.update_xaxes(title_text='Year', row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+    fig.update_yaxes(
+        title_text='%',
+        range=[0, 60],
+        tickformat='.0f',
+        ticksuffix='%',
+        gridcolor='#cccccc',
+        zeroline=False,
+        row=(i-1)//2 + 1,
+        col=(i-1)%2 + 1
+    )
+    fig.update_xaxes(
+        title_text='Year',
+        gridcolor='#cccccc',
+        zeroline=False,
+        row=(i-1)//2 + 1,
+        col=(i-1)%2 + 1
+    )
 
 fig.show()
 ```
@@ -414,6 +444,144 @@ fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
 fig.show()
 ```
 
+For comparison, here is the static version of the same visualization:
+
+```{python global_comparison_static}
+#| code-fold: true
+#| code-summary: "Show code for static comparison"
+
+# Create country comparison data
+country_comparison = (
+    hiv_knowledge_global
+    .pivot(index='country', columns='sex', values='obs_value')
+    .reset_index()
+    .dropna()
+)
+
+# Create figure
+fig = go.Figure()
+
+# Add identity line (y = x)
+fig.add_trace(go.Scatter(
+    x=[0, 70],
+    y=[0, 70],
+    mode='lines',
+    line=dict(color='gray', dash='dash'),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+# Add scatter points
+fig.add_trace(go.Scatter(
+    x=country_comparison['Female'],
+    y=country_comparison['Male'],
+    mode='markers',
+    marker=dict(
+        color='#3498db',
+        size=10,
+        opacity=0.7
+    ),
+    text=country_comparison['country'],
+    hovertemplate='<b>%{text}</b><br>' +
+                  'Female Knowledge: %{x:.1f}%<br>' +
+                  'Male Knowledge: %{y:.1f}%<extra></extra>',
+    showlegend=False
+))
+
+# Add trend line with confidence interval
+x = country_comparison['Female'].values
+y = country_comparison['Male'].values
+z = np.polyfit(x, y, 1)
+p = np.poly1d(z)
+
+x_smooth = np.linspace(min(x), max(x), 100)
+y_smooth = p(x_smooth)
+
+# Calculate confidence intervals
+residuals = y - p(x)
+std_dev = np.std(residuals)
+y_upper = y_smooth + 1.96 * std_dev
+y_lower = y_smooth - 1.96 * std_dev
+
+# Add confidence interval
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_upper,
+    mode='lines',
+    line=dict(width=0),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_lower,
+    mode='lines',
+    fill='tonexty',
+    fillcolor='rgba(231, 76, 60, 0.2)',
+    line=dict(width=0),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+# Add trend line
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_smooth,
+    mode='lines',
+    line=dict(color='#e74c3c', width=2),
+    showlegend=False,
+    hoverinfo='skip'
+))
+
+# Add annotations for selected points
+mask = ((abs(country_comparison['Male'] - country_comparison['Female']) > 10) |
+        (country_comparison['Female'] > 45) |
+        (country_comparison['Male'] > 45))
+
+for _, row in country_comparison[mask].iterrows():
+    fig.add_annotation(
+        x=row['Female'],
+        y=row['Male'],
+        text=row['country'],
+        showarrow=False,
+        font=dict(size=10),
+        yshift=5
+    )
+
+# Update layout
+fig.update_layout(
+    title={
+        'text': 'HIV Knowledge: Male vs. Female Comparison<br><sup>Each point represents a country\'s most recent data</sup>',
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    xaxis_title='Female Knowledge (%)',
+    yaxis_title='Male Knowledge (%)',
+    xaxis=dict(range=[0, 70], dtick=10),
+    yaxis=dict(range=[0, 70], dtick=10),
+    plot_bgcolor='white',
+    height=600,
+    showlegend=False,
+    annotations=[
+        dict(
+            text='Points above dashed line: Male knowledge exceeds female knowledge',
+            xref='paper',
+            yref='paper',
+            x=0.5,
+            y=-0.15,
+            showarrow=False,
+            font=dict(size=10)
+        )
+    ]
+)
+
+fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
+
+fig.show()
+```
+
 These visualizations reveal several important patterns in global HIV knowledge:
 
 1. **Persistent Gender Gap**: The boxplots show that, on average, males tend to have higher levels of HIV knowledge than females across countries. The median knowledge level for males is noticeably higher than for females.
@@ -444,16 +612,19 @@ This map displays the percentage of children under 5 affected by stunting (low h
 world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
 africa = world[world['CONTINENT'] == 'Africa'].copy()
 
-# Filter stunting data
+# Filter stunting data - use only Total values for each country
 stunting_data = combined_indicators[
     (combined_indicators['indicator'].str.contains('height.for.age', case=False, na=False) | 
      combined_indicators['indicator'].str.contains('stunting', case=False, na=False)) &
     (~combined_indicators['obs_value'].isna()) &
-    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
+    (combined_indicators['sex'] == 'Total')  # Only use Total values
 ]
 
 # Get most recent stunting data for each country
 recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
+
+# Ensure values are in proper percentage range (0-100)
+recent_stunting['obs_value'] = recent_stunting['obs_value'].apply(lambda x: min(100, max(0, x)))
 
 # Create a country name mapping dictionary
 country_mapping = {
@@ -471,55 +642,52 @@ recent_stunting['map_country'] = recent_stunting['country'].apply(
     lambda x: country_mapping.get(x, x)
 )
 
-# Merge stunting data with map data
-africa = africa.merge(
-    recent_stunting[['map_country', 'obs_value']], 
-    left_on='ADMIN', 
-    right_on='map_country', 
-    how='left'
-)
-
-# Convert GeoDataFrame to GeoJSON-like format for Plotly
-africa_json = json.loads(africa.to_json())
-
-# Create list of features for hover text
-hover_text = []
-for idx, row in africa.iterrows():
-    hover_text.append(f"Country: {row['ADMIN']}<br>" +
-                     f"Stunting Rate: {row['obs_value']:.1f}%" if pd.notna(row['obs_value']) 
-                     else f"Country: {row['ADMIN']}<br>No data available")
-
 # Create choropleth map
-fig = go.Figure(data=go.Choropleth(
-    geojson=africa_json,
-    locations=africa.index,
-    z=africa['obs_value'],
-    colorscale='YlOrRd',
-    colorbar_title="Stunting Rate (%)",
-    text=hover_text,
-    hoverinfo="text",
-))
-
-fig.update_geos(
-    projection_type="equirectangular",
-    visible=False,
-    showcountries=True,
-    countrycolor="gray",
-    showcoastlines=True,
-    coastlinecolor="gray",
+fig = px.choropleth(
+    recent_stunting,
+    locations='alpha_3_code',
+    color='obs_value',
+    hover_name='country',
+    color_continuous_scale=['lightyellow', 'yellowgreen', 'darkgreen'],
+    range_color=[0, 50],  # Set max to 50% as this is a more realistic range for stunting
+    labels={'obs_value': 'Stunting Rate (%)'},
+    custom_data=['obs_value']
 )
 
+# Update hover template to show percentage
+fig.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>Stunting Rate: %{customdata[0]:.1f}%<extra></extra>"
+)
+
+# Update layout
 fig.update_layout(
     title={
         'text': 'Child Stunting Burden in Africa<br><sup>Percentage of children under 5</sup>',
         'x': 0.5,
-        'xanchor': 'center'
+        'xanchor': 'center',
+        'font': {'size': 16, 'color': 'black'}
     },
     geo=dict(
-        scope='africa',
         showframe=False,
+        showcoastlines=True,
+        projection_type='equirectangular',
+        scope='africa',
+        bgcolor='white'
     ),
+    width=800,
     height=600,
+    margin=dict(t=50, b=0, l=0, r=0),
+    paper_bgcolor='white',
+    plot_bgcolor='white'
+)
+
+# Update colorbar
+fig.update_coloraxes(
+    colorbar_title_text="Stunting Rate (%)",
+    colorbar_title_side="right",
+    colorbar_thickness=15,
+    colorbar_len=0.5,
+    colorbar_title_font={'size': 12}
 )
 
 fig.show()
@@ -532,10 +700,9 @@ fig.show()
 #| code-summary: "Show code for Asia map"
 
 # Load world map data for Asia
-world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
 asia = world[world['CONTINENT'] == 'Asia'].copy()
 
-# Create a comprehensive country name mapping dictionary for Asia
+# Create a country name mapping dictionary for Asia
 asia_country_mapping = {
     "Iran, Islamic Republic of": "Iran",
     "Korea, Democratic People's Republic of": "North Korea",
@@ -543,101 +710,61 @@ asia_country_mapping = {
     "Lao People's Democratic Republic": "Laos",
     "Syrian Arab Republic": "Syria",
     "Viet Nam": "Vietnam",
-    "Myanmar": "Burma",
-    "China, People's Republic of": "China",
-    "China, Republic of": "Taiwan",
-    "Russian Federation": "Russia",
-    "Brunei Darussalam": "Brunei",
-    "Timor-Leste": "East Timor",
-    "Maldives": "Maldives",
-    "Kazakhstan": "Kazakhstan",
-    "Kyrgyzstan": "Kyrgyzstan",
-    "Tajikistan": "Tajikistan",
-    "Turkmenistan": "Turkmenistan",
-    "Uzbekistan": "Uzbekistan",
-    "Armenia": "Armenia",
-    "Azerbaijan": "Azerbaijan",
-    "Georgia": "Georgia",
-    "Bahrain": "Bahrain",
-    "Iraq": "Iraq",
-    "Israel": "Israel",
-    "Jordan": "Jordan",
-    "Kuwait": "Kuwait",
-    "Lebanon": "Lebanon",
-    "Oman": "Oman",
-    "Qatar": "Qatar",
-    "Saudi Arabia": "Saudi Arabia",
-    "United Arab Emirates": "United Arab Emirates",
-    "Yemen": "Yemen"
+    "Myanmar": "Burma"
 }
 
-# Filter stunting data for Asian countries
-stunting_data = combined_indicators[
-    (combined_indicators['indicator'].str.contains('height.for.age|stunting', case=False, na=False)) &
-    (~combined_indicators['obs_value'].isna()) &
-    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
-]
-
-# Get most recent stunting data for each country
-recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
-
 # Apply country name mapping
+recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
 recent_stunting['map_country'] = recent_stunting['country'].apply(
     lambda x: asia_country_mapping.get(x, x)
 )
 
-# Merge stunting data with map data
-asia = asia.merge(
-    recent_stunting[['map_country', 'obs_value']],
-    left_on='ADMIN',
-    right_on='map_country',
-    how='left'
-)
-
-# Convert GeoDataFrame to GeoJSON-like format for Plotly
-asia_json = json.loads(asia.to_json())
-
-# Create list of features for hover text
-hover_text = []
-for idx, row in asia.iterrows():
-    hover_text.append(f"Country: {row['ADMIN']}<br>" +
-                     f"Stunting Rate: {row['obs_value']:.1f}%" if pd.notna(row['obs_value'])
-                     else f"Country: {row['ADMIN']}<br>No data available")
-
 # Create choropleth map
-fig = go.Figure(data=go.Choropleth(
-    geojson=asia_json,
-    locations=asia.index,
-    z=asia['obs_value'],
-    colorscale='YlOrRd',
-    colorbar_title="Stunting Rate (%)",
-    text=hover_text,
-    hoverinfo="text",
-))
-
-fig.update_geos(
-    projection_type="equirectangular",
-    visible=False,
-    showcountries=True,
-    countrycolor="gray",
-    showcoastlines=True,
-    coastlinecolor="gray",
-    center=dict(lat=30, lon=100),  # Center on Asia
-    projection_scale=2.5  # Zoom in on Asia
+fig = px.choropleth(
+    recent_stunting,
+    locations='alpha_3_code',
+    color='obs_value',
+    hover_name='country',
+    color_continuous_scale=['lightyellow', 'yellowgreen', 'darkgreen'],
+    range_color=[0, 50],  # Set max to 50% as this is a more realistic range for stunting
+    labels={'obs_value': 'Stunting Rate (%)'},
+    custom_data=['obs_value']
 )
 
+# Update hover template to show percentage
+fig.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>Stunting Rate: %{customdata[0]:.1f}%<extra></extra>"
+)
+
+# Update layout
 fig.update_layout(
     title={
         'text': 'Child Stunting Burden in Asia<br><sup>Percentage of children under 5</sup>',
         'x': 0.5,
-        'xanchor': 'center'
+        'xanchor': 'center',
+        'font': {'size': 16, 'color': 'black'}
     },
     geo=dict(
-        scope='asia',
         showframe=False,
+        showcoastlines=True,
+        projection_type='equirectangular',
+        scope='asia',
+        bgcolor='white'
     ),
+    width=800,
     height=600,
-    margin=dict(l=0, r=0, t=50, b=0)
+    margin=dict(t=50, b=0, l=0, r=0),
+    paper_bgcolor='white',
+    plot_bgcolor='white'
+)
+
+# Update colorbar
+fig.update_coloraxes(
+    colorbar_title_text="Stunting Rate (%)",
+    colorbar_title_side="right",
+    colorbar_thickness=15,
+    colorbar_len=0.5,
+    colorbar_title_font={'size': 12}
 )
 
 fig.show()
@@ -763,6 +890,7 @@ The downward slope of the chart tells a positive story of nutrition improvement 
 
 Bangladesh's progress serves as an inspiring example for other countries facing similar challenges. The consistent decline demonstrates that with sustained commitment and evidence-based approaches, significant improvements in child nutrition outcomes are achievable even in resource-constrained settings.
 
+
 ## [Conclusion]{style="font-family: serif"}
 
 The analysis **reveals persistent and significant challenges** in both child stunting and HIV awareness among youth worldwide. **Stunting remains highly concentrated in South Asia and Sub-Saharan Africa**, with countries such as India, Bangladesh, and several Central African nations bearing the greatest burden. 
@@ -783,176 +911,3 @@ These findings emphasised the urgent need for targeted, region-specific interven
 6. Promote the **exchange of best practices** by learning from successful countries, adapting proven interventions to local contexts, and scaling up effective solutions.
 
 By acting on these recommendations, we can accelerate progress and help more children grow up healthy and strong.
-
-------------------------------------------------------------------------
-
-```{r}
-country_comparison <- hiv_knowledge_global %>%
-  select(country, sex, obs_value) %>%
-  tidyr::pivot_wider(
-    names_from = sex,
-    values_from = obs_value
-  ) %>%
-  filter(!is.na(Female) & !is.na(Male))
-
-comparison_plot <- ggplot(country_comparison, aes(x = Female, y = Male)) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
-  geom_point(size = 3, alpha = 0.7, color = "#3498db") +
-  geom_smooth(method = "lm", se = TRUE, color = "#e74c3c", fill = "#f8d5ce") +
-  geom_text_repel(
-    data = country_comparison %>% 
-             filter(abs(Male - Female) > 10 | Female > 45 | Male > 45),
-    aes(label = country),
-    size = 3,
-    box.padding = 0.5,
-    point.padding = 0.3,
-    max.overlaps = 10,
-    show.legend = FALSE
-  ) +
-  labs(
-    title = "HIV Knowledge: Male vs. Female Comparison",
-    subtitle = "Each point represents a country's most recent data",
-    x = "Female Knowledge (%)",
-    y = "Male Knowledge (%)",
-    caption = "Points above dashed line: Male knowledge exceeds female knowledge"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(size = 12),
-    panel.grid.minor = element_blank(),
-    axis.title = element_text(face = "bold", size = 12)
-  ) +
-  scale_x_continuous(limits = c(0, 70), breaks = seq(0, 70, by = 10)) +
-  scale_y_continuous(limits = c(0, 70), breaks = seq(0, 70, by = 10)) +
-  coord_fixed()
-
-print(comparison_plot)
-```
-
-------------------------------------------------------------------------
-
-```{python}
-#| code-fold: true
-#| code-summary: "Show code for male vs female comparison"
-#| fig-align: center
-#| fig-width: 10
-#| fig-height: 8
-#| out-width: 100%
-
-# Create country comparison plot
-country_comparison = (
-    hiv_knowledge_global
-    .pivot(index='country', columns='sex', values='obs_value')
-    .reset_index()
-    .dropna()
-)
-
-# Create scatter plot
-fig = go.Figure()
-
-# Add identity line (y = x)
-fig.add_trace(go.Scatter(
-    x=[0, 70],
-    y=[0, 70],
-    mode='lines',
-    line=dict(color='gray', dash='dash'),
-    showlegend=False
-))
-
-# Add data points
-fig.add_trace(go.Scatter(
-    x=country_comparison['Female'],
-    y=country_comparison['Male'],
-    mode='markers+text',
-    marker=dict(
-        color=COLORS['blue'],
-        size=10,
-        opacity=0.7
-    ),
-    text=country_comparison['country'],
-    textposition='top center',
-    textfont=dict(size=8),
-    showlegend=False,
-    hovertemplate="Country: %{text}<br>Female: %{x:.1f}%<br>Male: %{y:.1f}%<extra></extra>"
-))
-
-# Add trend line with confidence interval
-x = country_comparison['Female'].values
-y = country_comparison['Male'].values
-z = np.polyfit(x, y, 1)
-p = np.poly1d(z)
-
-x_smooth = np.linspace(min(x), max(x), 100)
-y_smooth = p(x_smooth)
-
-# Calculate confidence intervals
-residuals = y - p(x)
-std_dev = np.std(residuals)
-y_upper = y_smooth + 1.96 * std_dev
-y_lower = y_smooth - 1.96 * std_dev
-
-# Add confidence interval
-fig.add_trace(go.Scatter(
-    x=x_smooth,
-    y=y_upper,
-    mode='lines',
-    line=dict(width=0),
-    showlegend=False,
-    hoverinfo='skip'
-))
-fig.add_trace(go.Scatter(
-    x=x_smooth,
-    y=y_lower,
-    mode='lines',
-    line=dict(width=0),
-    fill='tonexty',
-    fillcolor='rgba(231, 76, 60, 0.2)',
-    showlegend=False,
-    hoverinfo='skip'
-))
-
-# Add trend line
-fig.add_trace(go.Scatter(
-    x=x_smooth,
-    y=y_smooth,
-    mode='lines',
-    line=dict(color=COLORS['red'], width=2),
-    showlegend=False,
-    hoverinfo='skip'
-))
-
-# Update layout
-fig.update_layout(
-    title={
-        'text': 'HIV Knowledge: Male vs. Female Comparison<br><sup>Each point represents a country\'s most recent data</sup>',
-        'x': 0.5,
-        'xanchor': 'center'
-    },
-    xaxis_title='Female Knowledge (%)',
-    yaxis_title='Male Knowledge (%)',
-    xaxis=dict(range=[0, 70], dtick=10),
-    yaxis=dict(range=[0, 70], dtick=10),
-    plot_bgcolor='white',
-    height=600,
-    showlegend=False,
-    annotations=[
-        dict(
-            text='Points above dashed line: Male knowledge exceeds female knowledge',
-            xref='paper',
-            yref='paper',
-            x=0.5,
-            y=-0.15,
-            showarrow=False,
-            font=dict(size=10)
-        )
-    ]
-)
-
-fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
-fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
-
-fig.show()
-```
-
-------------------------------------------------------------------------
