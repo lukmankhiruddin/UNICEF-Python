@@ -145,10 +145,10 @@ recent_hiv_knowledge = hiv_knowledge_data.sort_values('time_period', ascending=F
 
 # Calculate average knowledge by country and sort
 avg_knowledge = recent_hiv_knowledge.groupby('country')['obs_value'].mean().reset_index()
-avg_knowledge = avg_knowledge.sort_values('obs_value', ascending=True)
+avg_knowledge = avg_knowledge.sort_values('obs_value', ascending=True)  # Ascending for horizontal bars
 
 # Get top 5 countries
-top_5_countries = avg_knowledge.tail(5)
+top_5_countries = avg_knowledge.tail(5)  # Using tail because we reversed the order
 
 # Create interactive bar chart
 fig = go.Figure()
@@ -157,34 +157,26 @@ fig.add_trace(go.Bar(
     x=top_5_countries['obs_value'],
     y=top_5_countries['country'],
     orientation='h',
-    marker_color='darkgreen',
-    text=[f"{x:.1f}%" for x in top_5_countries['obs_value']],
+    marker_color=COLORS['green'],
+    text=top_5_countries['obs_value'].round(1).astype(str) + '%',
     textposition='outside',
-    hovertemplate="<b>%{y}</b><br>Knowledge Rate: %{x:.1f}%<extra></extra>"
 ))
 
 fig.update_layout(
     title={
         'text': 'Top 5 Countries with Highest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
         'x': 0.5,
-        'xanchor': 'center',
-        'font': {'size': 16, 'color': 'black'}
+        'xanchor': 'center'
     },
     xaxis_title='Percentage (%)',
     yaxis_title=None,
-    xaxis=dict(
-        range=[0, 75],
-        tickformat='.0f',
-        ticksuffix='%'
-    ),
+    xaxis=dict(range=[0, 75]),
     plot_bgcolor='white',
-    paper_bgcolor='white',
     showlegend=False,
     height=400,
-    margin=dict(t=80, b=50, l=0, r=50)
 )
 
-fig.update_xaxes(gridcolor='#cccccc', zeroline=False)
+fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
 fig.update_yaxes(gridcolor='white')
 
 fig.show()
@@ -206,34 +198,26 @@ fig.add_trace(go.Bar(
     x=bottom_5_countries['obs_value'],
     y=bottom_5_countries['country'],
     orientation='h',
-    marker_color='darkgreen',
-    text=[f"{x:.1f}%" for x in bottom_5_countries['obs_value']],
+    marker_color=COLORS['green'],
+    text=bottom_5_countries['obs_value'].round(1).astype(str) + '%',
     textposition='outside',
-    hovertemplate="<b>%{y}</b><br>Knowledge Rate: %{x:.1f}%<extra></extra>"
 ))
 
 fig.update_layout(
     title={
         'text': 'Bottom 5 Countries with Lowest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
         'x': 0.5,
-        'xanchor': 'center',
-        'font': {'size': 16, 'color': 'black'}
+        'xanchor': 'center'
     },
     xaxis_title='Percentage (%)',
     yaxis_title=None,
-    xaxis=dict(
-        range=[0, 75],
-        tickformat='.0f',
-        ticksuffix='%'
-    ),
+    xaxis=dict(range=[0, 75]),
     plot_bgcolor='white',
-    paper_bgcolor='white',
     showlegend=False,
     height=400,
-    margin=dict(t=80, b=50, l=0, r=50)
 )
 
-fig.update_xaxes(gridcolor='#cccccc', zeroline=False)
+fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
 fig.update_yaxes(gridcolor='white')
 
 fig.show()
@@ -284,22 +268,16 @@ top_trend_countries = country_data_counts.head(4)['country'].tolist()
 trend_data = hiv_knowledge_data[hiv_knowledge_data['country'].isin(top_trend_countries)]
 
 # Create subplots
-fig = make_subplots(
-    rows=2, cols=2,
-    subplot_titles=top_trend_countries,
-    vertical_spacing=0.15,
-    horizontal_spacing=0.1
-)
+fig = make_subplots(rows=2, cols=2, subplot_titles=top_trend_countries)
 
 # Plot each country
-colors = {'Female': '#F8766D', 'Male': '#619CFF'}  # Match R's default colors
 for i, country in enumerate(top_trend_countries):
     row = i // 2 + 1
     col = i % 2 + 1
     
     country_data = trend_data[trend_data['country'] == country]
     
-    for sex in ['Female', 'Male']:
+    for sex, color in zip(['Female', 'Male'], [COLORS['red'], COLORS['blue']]):
         sex_data = country_data[country_data['sex'] == sex]
         
         fig.add_trace(
@@ -307,11 +285,9 @@ for i, country in enumerate(top_trend_countries):
                 x=sex_data['time_period'],
                 y=sex_data['obs_value'],
                 name=sex,
-                line=dict(color=colors[sex], width=2),
+                line=dict(color=color),
                 mode='lines+markers',
-                marker=dict(size=8),
-                showlegend=(i == 0),
-                hovertemplate=f"{sex}: %{{y:.1f}}%<extra></extra>"
+                showlegend=(i == 0),  # Show legend only for first country
             ),
             row=row, col=col
         )
@@ -320,8 +296,7 @@ fig.update_layout(
     title={
         'text': 'HIV Knowledge Trends by Sex & Country<br><sup>Percentage of youth (15-24) with comprehensive knowledge</sup>',
         'x': 0.5,
-        'xanchor': 'center',
-        'font': {'size': 16, 'color': 'black'}
+        'xanchor': 'center'
     },
     height=600,
     showlegend=True,
@@ -332,29 +307,13 @@ fig.update_layout(
         xanchor="center",
         x=0.5
     ),
-    plot_bgcolor='white',
-    paper_bgcolor='white'
+    plot_bgcolor='white'
 )
 
 # Update all axes
 for i in range(1, 5):
-    fig.update_yaxes(
-        title_text='%',
-        range=[0, 60],
-        tickformat='.0f',
-        ticksuffix='%',
-        gridcolor='#cccccc',
-        zeroline=False,
-        row=(i-1)//2 + 1,
-        col=(i-1)%2 + 1
-    )
-    fig.update_xaxes(
-        title_text='Year',
-        gridcolor='#cccccc',
-        zeroline=False,
-        row=(i-1)//2 + 1,
-        col=(i-1)%2 + 1
-    )
+    fig.update_yaxes(title_text='%', range=[0, 60], row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+    fig.update_xaxes(title_text='Year', row=(i-1)//2 + 1, col=(i-1)%2 + 1)
 
 fig.show()
 ```
@@ -612,19 +571,16 @@ This map displays the percentage of children under 5 affected by stunting (low h
 world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
 africa = world[world['CONTINENT'] == 'Africa'].copy()
 
-# Filter stunting data - use only Total values for each country
+# Filter stunting data
 stunting_data = combined_indicators[
     (combined_indicators['indicator'].str.contains('height.for.age', case=False, na=False) | 
      combined_indicators['indicator'].str.contains('stunting', case=False, na=False)) &
     (~combined_indicators['obs_value'].isna()) &
-    (combined_indicators['sex'] == 'Total')  # Only use Total values
+    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
 ]
 
 # Get most recent stunting data for each country
 recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
-
-# Ensure values are in proper percentage range (0-100)
-recent_stunting['obs_value'] = recent_stunting['obs_value'].apply(lambda x: min(100, max(0, x)))
 
 # Create a country name mapping dictionary
 country_mapping = {
@@ -634,7 +590,15 @@ country_mapping = {
     "Tanzania, United Republic of": "United Republic of Tanzania",
     "Swaziland": "eSwatini",
     "Côte d'Ivoire": "Ivory Coast",
-    "Ivory Coast": "Ivory Coast"
+    "Ivory Coast": "Ivory Coast",
+    "Bolivia, Plurinational State of": "Bolivia",
+    "Iran, Islamic Republic of": "Iran",
+    "Korea, Democratic People's Republic of": "North Korea",
+    "Korea, Republic of": "South Korea",
+    "Lao People's Democratic Republic": "Laos",
+    "Syrian Arab Republic": "Syria",
+    "Viet Nam": "Vietnam",
+    "Myanmar": "Burma"
 }
 
 # Apply country name mapping
@@ -642,54 +606,44 @@ recent_stunting['map_country'] = recent_stunting['country'].apply(
     lambda x: country_mapping.get(x, x)
 )
 
+# Merge stunting data with map data
+africa = africa.merge(
+    recent_stunting[['map_country', 'obs_value']], 
+    left_on='ADMIN', 
+    right_on='map_country', 
+    how='left'
+)
+
+# Convert GeoDataFrame to GeoJSON-like format for Plotly
+africa_json = json.loads(africa.to_json())
+
 # Create choropleth map
 fig = px.choropleth(
     recent_stunting,
     locations='alpha_3_code',
     color='obs_value',
     hover_name='country',
-    color_continuous_scale=['lightyellow', 'yellowgreen', 'darkgreen'],
-    range_color=[0, 50],  # Set max to 50% as this is a more realistic range for stunting
+    color_continuous_scale='RdYlBu_r',
+    range_color=[0, 100],  # Set range to 0-100 for percentages
     labels={'obs_value': 'Stunting Rate (%)'},
-    custom_data=['obs_value']
-)
-
-# Update hover template to show percentage
-fig.update_traces(
-    hovertemplate="<b>%{hovertext}</b><br>Stunting Rate: %{customdata[0]:.1f}%<extra></extra>"
+    title='Child Stunting Rates by Country',
+    scope='africa'
 )
 
 # Update layout
 fig.update_layout(
-    title={
-        'text': 'Child Stunting Burden in Africa<br><sup>Percentage of children under 5</sup>',
-        'x': 0.5,
-        'xanchor': 'center',
-        'font': {'size': 16, 'color': 'black'}
-    },
+    title_x=0.5,
     geo=dict(
         showframe=False,
         showcoastlines=True,
-        projection_type='equirectangular',
-        scope='africa',
-        bgcolor='white'
+        projection_type='equirectangular'
     ),
     width=800,
     height=600,
-    margin=dict(t=50, b=0, l=0, r=0),
-    paper_bgcolor='white',
-    plot_bgcolor='white'
+    margin=dict(t=50, b=0, l=0, r=0)
 )
 
-# Update colorbar
-fig.update_coloraxes(
-    colorbar_title_text="Stunting Rate (%)",
-    colorbar_title_side="right",
-    colorbar_thickness=15,
-    colorbar_len=0.5,
-    colorbar_title_font={'size': 12}
-)
-
+# Show the map
 fig.show()
 ```
 
@@ -700,6 +654,7 @@ fig.show()
 #| code-summary: "Show code for Asia map"
 
 # Load world map data for Asia
+world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
 asia = world[world['CONTINENT'] == 'Asia'].copy()
 
 # Create a country name mapping dictionary for Asia
@@ -714,10 +669,27 @@ asia_country_mapping = {
 }
 
 # Apply country name mapping
-recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
+recent_stunting = combined_indicators[
+    (combined_indicators['country'].isin(asia_country_mapping.keys())) &
+    (combined_indicators['indicator'].str.contains('stunting|height.for.age', case=False, na=False)) &
+    (~combined_indicators['obs_value'].isna()) &
+    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
+]
+
 recent_stunting['map_country'] = recent_stunting['country'].apply(
     lambda x: asia_country_mapping.get(x, x)
 )
+
+# Merge stunting data with map data
+asia = asia.merge(
+    recent_stunting[['map_country', 'obs_value']],
+    left_on='ADMIN',
+    right_on='map_country',
+    how='left'
+)
+
+# Convert GeoDataFrame to GeoJSON-like format for Plotly
+asia_json = json.loads(asia.to_json())
 
 # Create choropleth map
 fig = px.choropleth(
@@ -725,48 +697,27 @@ fig = px.choropleth(
     locations='alpha_3_code',
     color='obs_value',
     hover_name='country',
-    color_continuous_scale=['lightyellow', 'yellowgreen', 'darkgreen'],
-    range_color=[0, 50],  # Set max to 50% as this is a more realistic range for stunting
+    color_continuous_scale='RdYlBu_r',
+    range_color=[0, 100],  # Set range to 0-100 for percentages
     labels={'obs_value': 'Stunting Rate (%)'},
-    custom_data=['obs_value']
-)
-
-# Update hover template to show percentage
-fig.update_traces(
-    hovertemplate="<b>%{hovertext}</b><br>Stunting Rate: %{customdata[0]:.1f}%<extra></extra>"
+    title='Child Stunting Rates by Country',
+    scope='asia'
 )
 
 # Update layout
 fig.update_layout(
-    title={
-        'text': 'Child Stunting Burden in Asia<br><sup>Percentage of children under 5</sup>',
-        'x': 0.5,
-        'xanchor': 'center',
-        'font': {'size': 16, 'color': 'black'}
-    },
+    title_x=0.5,
     geo=dict(
         showframe=False,
         showcoastlines=True,
-        projection_type='equirectangular',
-        scope='asia',
-        bgcolor='white'
+        projection_type='equirectangular'
     ),
     width=800,
     height=600,
-    margin=dict(t=50, b=0, l=0, r=0),
-    paper_bgcolor='white',
-    plot_bgcolor='white'
+    margin=dict(t=50, b=0, l=0, r=0)
 )
 
-# Update colorbar
-fig.update_coloraxes(
-    colorbar_title_text="Stunting Rate (%)",
-    colorbar_title_side="right",
-    colorbar_thickness=15,
-    colorbar_len=0.5,
-    colorbar_title_font={'size': 12}
-)
-
+# Show the map
 fig.show()
 ```
 
@@ -890,6 +841,54 @@ The downward slope of the chart tells a positive story of nutrition improvement 
 
 Bangladesh's progress serves as an inspiring example for other countries facing similar challenges. The consistent decline demonstrates that with sustained commitment and evidence-based approaches, significant improvements in child nutrition outcomes are achievable even in resource-constrained settings.
 
+## [Rwanda's Progress in HIV Knowledge]{style="font-family: serif"}
+
+This visualization shows the trend of HIV knowledge in Rwanda over time, comparing male and female youth (aged 15-24). Rwanda has made significant progress in HIV education, with both genders showing substantial improvement over the years.
+
+```{python rwanda_hiv_trends}
+#| code-fold: true
+#| code-summary: "Show code for Rwanda trends"
+
+# Filter data for Rwanda
+rwanda_data = hiv_knowledge_data[
+    (hiv_knowledge_data['country'] == 'Rwanda') &
+    (hiv_knowledge_data['sex'].isin(['Female', 'Male']))
+].sort_values('time_period')
+
+# Create figure with larger size
+plt.figure(figsize=(12, 8))
+
+# Plot lines and points for each gender
+for sex, color in zip(['Female', 'Male'], ['#F8766D', '#619CFF']):
+    sex_data = rwanda_data[rwanda_data['sex'] == sex]
+    plt.plot(sex_data['time_period'], sex_data['obs_value'], 
+             marker='o', markersize=8, linewidth=2,
+             color=color, label=sex)
+
+# Customize the plot
+plt.title('HIV Knowledge Trends in Rwanda', fontsize=16, pad=20)
+plt.xlabel('Year', fontsize=12)
+plt.ylabel('Knowledge Rate (%)', fontsize=12)
+
+# Set axis limits and grid
+plt.ylim(0, 70)
+plt.grid(True, alpha=0.3)
+
+# Add legend
+plt.legend(fontsize=12)
+
+# Set background color
+plt.gca().set_facecolor('white')
+plt.gcf().set_facecolor('white')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plot
+plt.show()
+```
+
+The visualization reveals that Rwanda has made remarkable progress in HIV education over the past two decades. Both male and female youth have shown significant improvement in their HIV knowledge levels, with the gender gap remaining relatively small. This success can be attributed to Rwanda's comprehensive HIV education programs and health initiatives.
 
 ## [Conclusion]{style="font-family: serif"}
 
@@ -911,3 +910,4 @@ These findings emphasised the urgent need for targeted, region-specific interven
 6. Promote the **exchange of best practices** by learning from successful countries, adapting proven interventions to local contexts, and scaling up effective solutions.
 
 By acting on these recommendations, we can accelerate progress and help more children grow up healthy and strong.
+
