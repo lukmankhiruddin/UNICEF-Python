@@ -5,60 +5,197 @@ format:
   html:
     toc: true
     theme: sandstone
-    code-fold: true         # Make code foldable
-    code-tools: true        # Add code tools (copy, etc.)
-    code-summary: "Show code" # Text shown on the code folding button
-    embed-resources: true   # Embed all resources in the HTML file
+    code-fold: true
+    code-tools: true
+    code-summary: "Show code"
+    embed-resources: true
+    css: |
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+      
+      .title {
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 3.5em !important;
+        font-weight: 700 !important;
+        color: #2C3E50 !important;
+        letter-spacing: 0.02em !important;
+        margin-bottom: 0.2em !important;
+        text-align: left !important;
+      }
+      
+      .subtitle {
+        font-size: 1.5em !important;
+        margin-bottom: 0.5em !important;
+        color: #34495E !important;
+      }
+      
+      .quarto-title-meta {
+        margin-bottom: 0.5em !important;
+      }
+      
+      .quarto-title-block {
+        margin-bottom: 0.5em !important;
+      }
+      
+      .quarto-title {
+        margin-top: 0.5em !important;
+      }
+      
+      hr {
+        margin: 0.5em 0 !important;
+      }
+      
+      #title-block-header {
+        margin-block-end: 0.5em !important;
+      }
+      
+      .cell {
+        padding: 0.5em 0 !important;
+        margin: 0 !important;
+      }
 execute:
-  echo: true                # Show code by default (changed from false)
+  echo: true
   warning: false
   message: false
   error: false
-jupyter: python3
 author: "Lukman Khiruddin"
 date: "April 22 2025"
 ---
 
+```{python}
+#| echo: false
+
+from IPython.display import HTML
+
+social_html = '''
+<div class="social-container">
+    <a href="https://www.linkedin.com/in/lukmankhiruddin" class="social-link linkedin" target="_blank" title="Connect on LinkedIn">
+        <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/linkedin.svg" 
+             width="32" height="32">
+    </a>
+    <a href="https://public.tableau.com/app/profile/nur.lukman.hakim.bin.mohd.khiruddin/viz/LukmanKhiruddinBAA1030DataAnalytics/Dashboard1" 
+       class="social-link tableau" target="_blank" title="View Tableau Dashboard">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.654 5.327H9.81v3.673h1.844V5.327zm1.845 3.673h1.844V5.327H13.5V9zm-1.845 1.846H9.81v3.673h1.844v-3.673zm1.845 3.673h1.844v-3.673H13.5v3.673zm-5.534-9.191H6.121v3.672h1.845V5.327zm1.845 3.673h1.844V5.327H9.81V9zM8.155 10.846H6.31v3.673h1.845v-3.673zm1.654 3.673h1.845v-3.673H9.81v3.673zm9.068-9.191h-1.845v3.672h1.845V5.327zm-1.845 5.518h1.845V7.173h-1.845v3.672zM15.344 5.327H13.5v3.673h1.844V5.327zm-1.845 5.518h1.844V7.173H13.5v3.672zm3.533 0h1.845V7.173h-1.845v3.672zm0 1.846v3.673h1.845v-3.673h-1.845zM15.344 10.846H13.5v3.673h1.844v-3.673zm-1.845 5.518h1.844v-3.672H13.5v3.672zm3.533 0h1.845v-3.672h-1.845v3.672zM9.81 16.364H7.966v3.673H9.81v-3.673zm1.845 3.673h1.844v-3.673H11.654v3.673zm1.845-3.673H13.5v3.673h1.844v-3.673z" fill="currentColor"/>
+        </svg>
+    </a>
+    <a href="https://github.com/lukmankhiruddin" class="social-link github" target="_blank" title="View GitHub Profile">
+        <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/github.svg"
+             width="32" height="32">
+    </a>
+</div>
+
+<style>
+.social-container {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    z-index: 1000;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 15px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    color: white;
+    text-decoration: none;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.linkedin {
+    background-color: #0077b5;
+}
+
+.tableau {
+    background-color: #E97627;
+}
+
+.github {
+    background-color: #333333;
+}
+
+.social-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.linkedin:hover {
+    background-color: #005582;
+}
+
+.tableau:hover {
+    background-color: #d15f0d;
+}
+
+.github:hover {
+    background-color: #24292e;
+}
+
+.social-link img, .social-link svg {
+    filter: brightness(0) invert(1);
+    transition: transform 0.3s ease;
+}
+
+.social-link:hover img, .social-link:hover svg {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .social-container {
+        right: 20px;
+        bottom: 20px;
+        gap: 10px;
+    }
+    
+    .social-link {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .social-link img, .social-link svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+</style>
+'''
+
+HTML(social_html)
+```
+
 ------------------------------------------------------------------------
 
-
-                                                                                                                                                           
 ## [Introduction]{style="font-family: serif"}
 
 In every corner of our world, the journey of childhood unfolds with both promise and pitfalls. Where the glow of hope is often shadowed by the realities of stunted growth and the silent spread of HIV.
 
 This dashboard invites you to explore the global landscape of child development, weaving together vivid data on child stunting and HIV awareness to reveal the stark contrasts and hidden connections shaping young lives.
 
-
 ```{python}
 #| code-fold: true
 #| code-summary: "Show code"
+#| comment: ""
 
-# Import necessary libraries
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import geopandas as gpd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import geopandas as gpd
-import json
-import matplotlib.pyplot as plt
-
-# Define color scheme to match R's ggplot2
-COLORS = {
-    'green': '#00BA38',
-    'red': '#F8766D',
-    'blue': '#619CFF',
-    'orange': '#FF9E4A',
-    'yellow': '#B79F00',
-    'background': '#F0F0F0',
-    'grid': '#CCCCCC',
-    'text': '#000000'
-}
 ```
 
 ```{python}
 #| include: false
+#| echo: false
 
 # Data Exploration
 unicef_indicator_1 = pd.read_csv("data/unicef_indicator_1.csv")
@@ -67,779 +204,975 @@ unicef_metadata = pd.read_csv("data/unicef_metadata.csv")
 combined_indicators = pd.read_csv("data/Indicator_Combined.csv")
 ```
 
-```{python}
-#| include: false
-
-# Check the structure of datasets
-unicef_indicator_1.head()
-unicef_indicator_2.head()
-unicef_metadata.head()
-```
-
-```{python}
-#| include: false
-
-# Checking the shape and missing values in unicef_indicator_1 dataset
-print(unicef_indicator_1.shape)
-missing_values_1 = unicef_indicator_1.isna().sum()
-print(missing_values_1)
-# In the unicef_indicator_1 dataset, four columns contain only missing values - removing them
-```
-
-```{python}
-#| include: false
-
-# Fill missing values of alpha_2_code with alpha_3_code
-unicef_indicator_1['alpha_2_code'] = unicef_indicator_1['alpha_2_code'].fillna(unicef_indicator_1['alpha_3_code'])
-
-# Drop columns with all missing values from unicef_indicator_1 dataset
-cols_to_drop = ["time_period_activity_related_to_when_the_data_are_collected", 
-                "observation_confidentaility", 
-                "observation_status", 
-                "unit_multiplier"]
-unicef_indicator_1 = unicef_indicator_1.drop(columns=cols_to_drop, errors='ignore')
-```
-
-```{python}
-#| include: false
-
-# Missing values in unicef_indicator_2 dataset
-missing_values_2 = unicef_indicator_2.isna().sum()
-print(missing_values_2)
-
-# Fill missing values of alpha_2_code with alpha_3_code
-unicef_indicator_2['alpha_2_code'] = unicef_indicator_2['alpha_2_code'].fillna(unicef_indicator_2['alpha_3_code'])
-```
-
-```{python}
-#| include: false
-
-# Missing values in unicef_metadata dataset
-missing_values_metadata = unicef_metadata.isna().sum()
-print(missing_values_metadata)
-
-# Drop rows with missing values from unicef_metadata dataset
-unicef_metadata = unicef_metadata.dropna()
-```
-
 ## [HIV Knowledge Among Youth by Country]{style="font-family: serif"}
 
-This comparison highlights the percentage of young people (aged 15–24) who possess comprehensive, correct knowledge of HIV across countries. By displaying both the leaders and laggards, we can better understand the global disparities in HIV education. This helps policymakers identify both success stories to emulate and areas where urgent action is needed.
+This comparison highlights the percentage of young people (aged 15–24) who possess comprehensive, correct knowledge of HIV across countries.
 
 ::: {.panel-tabset}
 
-## Top 5 Countries
+## TOP 5 COUNTRIES
 
-```{python hiv_knowledge_top_tab}
+```{python}
 #| code-fold: true
-#| code-summary: "Show code for top countries chart"
+#| code-summary: "Show code"
 
-# Filter HIV knowledge data
 hiv_knowledge_data = combined_indicators[
     combined_indicators['indicator'].str.contains('comprehensive, correct knowledge of HIV', case=False, na=False)
-]
-hiv_knowledge_data = hiv_knowledge_data[~hiv_knowledge_data['obs_value'].isna()]
+].dropna(subset=['obs_value'])
 
-# Get the most recent data for each country and sex
+hiv_knowledge_data['time_period'] = hiv_knowledge_data['time_period'].astype(str).str.extract(r'(\d{4})').astype(int)
+
 recent_hiv_knowledge = hiv_knowledge_data.sort_values('time_period', ascending=False).groupby(['country', 'sex']).first().reset_index()
 
-# Calculate average knowledge by country and sort
-avg_knowledge = recent_hiv_knowledge.groupby('country')['obs_value'].mean().reset_index()
-avg_knowledge = avg_knowledge.sort_values('obs_value', ascending=True)  # Ascending for horizontal bars
+avg_hiv_knowledge = recent_hiv_knowledge.groupby('country')['obs_value'].mean().sort_values(ascending=False).reset_index()
 
-# Get top 5 countries
-top_5_countries = avg_knowledge.tail(5)  # Using tail because we reversed the order
+top_5_countries = avg_hiv_knowledge.head(5)
 
-# Create interactive bar chart
 fig = go.Figure()
 
 fig.add_trace(go.Bar(
-    x=top_5_countries['obs_value'],
     y=top_5_countries['country'],
+    x=top_5_countries['obs_value'],
     orientation='h',
-    marker_color=COLORS['green'],
-    text=top_5_countries['obs_value'].round(1).astype(str) + '%',
-    textposition='outside',
+    marker=dict(
+        color='rgba(34, 139, 34, 0.3)',  
+        line=dict(color='rgba(34, 139, 34, 0.8)', width=1)  
+    ),
+    text=[f'{val:.1f}%' for val in top_5_countries['obs_value']],
+    textposition='auto',
+    hovertemplate='<b>%{y}</b><br>HIV Knowledge: %{x:.1f}%<extra></extra>'
 ))
 
 fig.update_layout(
-    title={
-        'text': 'Top 5 Countries with Highest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
-        'x': 0.5,
-        'xanchor': 'center'
-    },
-    xaxis_title='Percentage (%)',
-    yaxis_title=None,
-    xaxis=dict(range=[0, 75]),
-    plot_bgcolor='white',
     showlegend=False,
-    height=400,
+    height=300,
+    width=None,  
+    margin=dict(l=50, r=50, t=50, b=50),
+    plot_bgcolor='white',
+    paper_bgcolor='white',
+    xaxis=dict(
+        title='Percentage (%)',
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(128,128,128,0.1)',
+        zeroline=False,
+        showline=True,
+        linecolor='rgba(128,128,128,0.3)',
+        linewidth=1,
+        range=[0, max(top_5_countries['obs_value']) * 1.1] 
+    ),
+    yaxis=dict(
+        showgrid=False,
+        showline=True,
+        linecolor='rgba(128,128,128,0.3)',
+        linewidth=1,
+        automargin=True  
+    ),
+    autosize=True,
+    font=dict(
+        size=12
+    )
 )
 
-fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
-fig.update_yaxes(gridcolor='white')
-
-fig.show()
+fig.show(config={'responsive': True})
 ```
 
-## Bottom 5 Countries
+## BOTTOM 5 COUNTRIES
 
-```{python hiv_knowledge_bottom_tab}
+```{python}
 #| code-fold: true
-#| code-summary: "Show code for bottom countries chart"
+#| code-summary: "Show code"
 
-# Get bottom 5 countries
-bottom_5_countries = avg_knowledge.head(5)
 
-# Create interactive bar chart
-fig = go.Figure()
+bottom_5_countries = avg_hiv_knowledge.tail(5)
 
-fig.add_trace(go.Bar(
-    x=bottom_5_countries['obs_value'],
+
+fig2 = go.Figure()
+
+fig2.add_trace(go.Bar(
     y=bottom_5_countries['country'],
+    x=bottom_5_countries['obs_value'],
     orientation='h',
-    marker_color=COLORS['green'],
-    text=bottom_5_countries['obs_value'].round(1).astype(str) + '%',
-    textposition='outside',
+    marker=dict(
+        color='rgba(34, 139, 34, 0.3)',  
+        line=dict(color='rgba(34, 139, 34, 0.8)', width=1)  
+    ),
+    text=[f'{val:.1f}%' for val in bottom_5_countries['obs_value']],
+    textposition='auto',
+    hovertemplate='<b>%{y}</b><br>HIV Knowledge: %{x:.1f}%<extra></extra>'
 ))
 
-fig.update_layout(
-    title={
-        'text': 'Bottom 5 Countries with Lowest HIV Knowledge<br><sup>Youth (15-24 years)</sup>',
-        'x': 0.5,
-        'xanchor': 'center'
-    },
-    xaxis_title='Percentage (%)',
-    yaxis_title=None,
-    xaxis=dict(range=[0, 75]),
-    plot_bgcolor='white',
+fig2.update_layout(
     showlegend=False,
-    height=400,
+    height=300,
+    width=None,  
+    margin=dict(l=50, r=50, t=50, b=50),
+    plot_bgcolor='white',
+    paper_bgcolor='white',
+    xaxis=dict(
+        title='Percentage (%)',
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(128,128,128,0.1)',
+        zeroline=False,
+        showline=True,
+        linecolor='rgba(128,128,128,0.3)',
+        linewidth=1,
+        range=[0, max(top_5_countries['obs_value']) * 1.1]  
+    ),
+    yaxis=dict(
+        showgrid=False,
+        showline=True,
+        linecolor='rgba(128,128,128,0.3)',
+        linewidth=1,
+        automargin=True  
+    ),
+    autosize=True,
+    font=dict(
+        size=12
+    )
 )
 
-fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
-fig.update_yaxes(gridcolor='white')
-
-fig.show()
+fig2.show(config={'responsive': True})
 ```
 
 :::
 
-This tabbed comparison reveals stark disparities in HIV knowledge among youth globally. The top-performing countries (primarily in Eastern and Southern Africa) have achieved knowledge rates above 50%, while the lowest-performing countries show rates below 5%. 
+This tab comparison reveals stark disparities in HIV knowledge among youth globally. The top performing countries (primarily in Africa continent) have achieved knowledge rates above 50%, while the lowest-performing countries show rates below 5%.
 
-This significant gap (over 55 percentage points between highest and lowest) highlights implementation disparities in HIV education programs worldwide. Countries at the bottom of the ranking could benefit from adapting successful education strategies from top-performing nations.
+This significant gap (over 55% points between highest and lowest) highlights implementation disparities in HIV education programs worldwide. **Countries at the bottom of the ranking could benefit from adapting successful education strategies from top-performing nations.**
 
 ## [Top 4 Countries with HIV Knowledge Trends Over Time]{style="font-family: serif"}
 
-This line chart tracks the evolution of HIV knowledge among males and females in 4 countries over time. The visual uncovers whether both genders are benefiting equally from education efforts, and whether progress is steady, stagnant, or declining. It provides a clear picture of gender gaps and helps guide future interventions to ensure no one is left behind.
+This line chart tracks the **evolution of HIV knowledge** among male and female in 4 countries over time. The visual uncovers whether both genders are benefiting equally from education efforts, and whether progress is steady, stagnant, or declining.
 
-```{python hiv_knowledge_trends}
+It provides a **clear picture of gender gaps and helps guide future interventions** to ensure no one is left behind.
+
+```{python}
 #| code-fold: true
-#| code-summary: "Show code for trends chart"
+#| code-summary: "Show code"
 
-# Filter data for comprehensive HIV knowledge
-hiv_knowledge_data = combined_indicators[
-    combined_indicators['indicator'].str.contains('comprehensive, correct knowledge of HIV', case=False, na=False)
-]
-hiv_knowledge_data = hiv_knowledge_data[~hiv_knowledge_data['obs_value'].isna()]
-hiv_knowledge_data = hiv_knowledge_data[hiv_knowledge_data['sex'].isin(['Female', 'Male'])]
 
-# Count data points by country and sex to find those with the most data
-country_data_counts = (
-    hiv_knowledge_data.groupby(['country', 'sex'])
-    .size()
-    .reset_index(name='data_points')
-    .groupby('country')
-    .agg(
-        total_points=('data_points', 'sum'),
-        has_both_sexes=('sex', 'nunique')
-    )
-    .reset_index()
-)
+trend_data = hiv_knowledge_data[
+    hiv_knowledge_data['sex'].isin(['Female', 'Male'])
+].copy()
 
-# Filter for countries with both sexes and sort by total data points
-country_data_counts = country_data_counts[country_data_counts['has_both_sexes'] > 1]
-country_data_counts = country_data_counts.sort_values('total_points', ascending=False)
 
-# Get top 4 countries with most data points
+country_data_counts = trend_data.groupby(['country', 'sex']).size().reset_index(name='data_points')
+country_data_counts = country_data_counts.groupby('country').agg({
+    'data_points': 'sum',
+    'sex': 'nunique'
+}).reset_index()
+country_data_counts = country_data_counts[country_data_counts['sex'] > 1].sort_values('data_points', ascending=False)
+
+
 top_trend_countries = country_data_counts.head(4)['country'].tolist()
 
-# Filter data for top countries
-trend_data = hiv_knowledge_data[hiv_knowledge_data['country'].isin(top_trend_countries)]
 
-# Create subplots
+trend_data = trend_data[trend_data['country'].isin(top_trend_countries)]
+
+
 fig = make_subplots(rows=2, cols=2, subplot_titles=top_trend_countries)
 
-# Plot each country
 for i, country in enumerate(top_trend_countries):
-    row = i // 2 + 1
-    col = i % 2 + 1
+    row = (i // 2) + 1
+    col = (i % 2) + 1
     
     country_data = trend_data[trend_data['country'] == country]
     
-    for sex, color in zip(['Female', 'Male'], [COLORS['red'], COLORS['blue']]):
+    for sex, color in [('Female', 'rgba(255, 99, 71, 1)'), ('Male', 'rgba(135, 206, 235, 1)')]:
         sex_data = country_data[country_data['sex'] == sex]
+       
+        sex_data = sex_data.sort_values('time_period')
+        
         
         fig.add_trace(
             go.Scatter(
                 x=sex_data['time_period'],
                 y=sex_data['obs_value'],
-                name=sex,
-                line=dict(color=color),
                 mode='lines+markers',
-                showlegend=(i == 0),  # Show legend only for first country
+                name=sex,
+                line=dict(
+                    color=color, 
+                    width=2,
+                    shape='spline',  
+                    smoothing=0.3    
+                ),
+                marker=dict(
+                    size=8,
+                    line=dict(color=color)
+                ),
+                hovertemplate='<b>%{x}</b><br>%{y:.1f}%<extra></extra>',
+                showlegend=(i == 0)
             ),
             row=row, col=col
         )
 
+
 fig.update_layout(
-    title={
-        'text': 'HIV Knowledge Trends by Sex & Country<br><sup>Percentage of youth (15-24) with comprehensive knowledge</sup>',
-        'x': 0.5,
-        'xanchor': 'center'
-    },
     height=600,
+    width=None,  
     showlegend=True,
     legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=-0.2,
-        xanchor="center",
-        x=0.5
+        orientation='h',
+        yanchor='top',
+        y=-0.15,
+        xanchor='center',
+        x=0.5,
+        bgcolor='rgba(255,255,255,0.8)'
     ),
-    plot_bgcolor='white'
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    margin=dict(t=50, b=80, l=50, r=50),
+    autosize=True
 )
 
-# Update all axes
+
 for i in range(1, 5):
-    fig.update_yaxes(title_text='%', range=[0, 60], row=(i-1)//2 + 1, col=(i-1)%2 + 1)
-    fig.update_xaxes(title_text='Year', row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+    fig.update_xaxes(
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(128,128,128,0.2)',
+        dtick=5,  
+        row=(i-1)//2 + 1,
+        col=(i-1)%2 + 1
+    )
+    fig.update_yaxes(
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(128,128,128,0.2)',
+        range=[15, 65],  
+        row=(i-1)//2 + 1,
+        col=(i-1)%2 + 1
+    )
 
-fig.show()
+fig.show(config={'responsive': True})
 ```
-
-This line chart reveals the evolution of HIV knowledge among young people across countries with the richest trend data, showing patterns of change over time for both males and females.
-
 
 ## [Global Gender Gap in HIV Knowledge]{style="font-family: serif"}
 
-This scatterplot displays HIV knowledge levels for young people (aged 15-24) across all countries, comparing males and females. Each point represents a country-gender combination, with the most recent available data for each country. The visualization reveals a clear pattern of gender disparity in HIV knowledge globally.
-
-```{python global_hiv_knowledge_scatter}
+This scatterplot displays HIV knowledge levels for young people (aged 15-24) across all countries, comparing male and female. Each **point represents a country-gender combination**, with the most recent available data for each country. The visualization **reveals a clear pattern of gender disparity in HIV knowledge globally**.
+```{python}
 #| code-fold: true
-#| code-summary: "Show code for global comparison"
+#| code-summary: "Show code"
 
-# Get the most recent data for each country and sex combination
-hiv_knowledge_global = (
-    hiv_knowledge_data
-    .sort_values('time_period', ascending=False)
-    .groupby(['country', 'sex'])
-    .first()
-    .reset_index()
-)
 
-# Filter to just Male and Female data
-hiv_knowledge_global = hiv_knowledge_global[hiv_knowledge_global['sex'].isin(['Female', 'Male'])]
+recent_data = hiv_knowledge_data.sort_values('time_period', ascending=False).groupby(['country', 'sex']).first().reset_index()
 
-# Create scatter plot with box plots
+
 fig = go.Figure()
 
-# Add box plots
-for sex, color in zip(['Female', 'Male'], [COLORS['red'], COLORS['blue']]):
-    sex_data = hiv_knowledge_global[hiv_knowledge_global['sex'] == sex]
-    
-    # Add box plot
-    fig.add_trace(go.Box(
-        x=[sex] * len(sex_data),
-        y=sex_data['obs_value'],
-        name=sex,
-        marker_color=color,
-        boxpoints='all',
-        jitter=0.3,
-        pointpos=-1.8,
-        marker=dict(
-            color=color,
-            size=8,
-            opacity=0.7
-        ),
-        line=dict(color='black'),
-        fillcolor='white',
-        hovertemplate="Country: %{text}<br>Value: %{y:.1f}%<extra></extra>",
-        text=sex_data['country']
-    ))
 
-# Add horizontal line at median
-median_value = hiv_knowledge_global['obs_value'].median()
-fig.add_shape(
-    type='line',
-    x0='Female',
-    x1='Male',
-    y0=median_value,
-    y1=median_value,
-    line=dict(
-        color='darkgray',
-        width=2,
-        dash='dash'
-    )
-)
+female_color = 'rgba(255, 99, 71, 0.6)' 
+male_color = 'rgba(70, 130, 180, 0.6)'   
+grid_color = 'rgba(128, 128, 128, 0.1)'   
 
-# Update layout
-fig.update_layout(
-    title={
-        'text': 'Global Gender Gap in HIV Knowledge<br><sup>Most recent data on youth (15-24) with comprehensive HIV knowledge by country</sup>',
-        'x': 0.5,
-        'xanchor': 'center'
-    },
-    yaxis_title='HIV Knowledge (%)',
-    xaxis_title=None,
-    yaxis=dict(range=[0, 70]),
-    plot_bgcolor='white',
-    height=600,
-    showlegend=False,
-)
 
-fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
-
-fig.show()
-```
-
-For comparison, here is the static version of the same visualization:
-
-```{python global_comparison_static}
-#| code-fold: true
-#| code-summary: "Show code for static comparison"
-
-# Create country comparison data
-country_comparison = (
-    hiv_knowledge_global
-    .pivot(index='country', columns='sex', values='obs_value')
-    .reset_index()
-    .dropna()
-)
-
-# Create figure
-fig = go.Figure()
-
-# Add identity line (y = x)
-fig.add_trace(go.Scatter(
-    x=[0, 70],
-    y=[0, 70],
-    mode='lines',
-    line=dict(color='gray', dash='dash'),
-    showlegend=False,
-    hoverinfo='skip'
-))
-
-# Add scatter points
-fig.add_trace(go.Scatter(
-    x=country_comparison['Female'],
-    y=country_comparison['Male'],
-    mode='markers',
+female_data = recent_data[recent_data['sex'] == 'Female']
+fig.add_trace(go.Box(
+    y=female_data['obs_value'],
+    name='Female',
+    boxpoints='all',
+    jitter=0.3,
+    pointpos=0,
     marker=dict(
-        color='#3498db',
-        size=10,
-        opacity=0.7
+        color=female_color,
+        size=8,
+        line=dict(color='white', width=1)
     ),
-    text=country_comparison['country'],
-    hovertemplate='<b>%{text}</b><br>' +
-                  'Female Knowledge: %{x:.1f}%<br>' +
-                  'Male Knowledge: %{y:.1f}%<extra></extra>',
-    showlegend=False
+    line=dict(color='rgba(255, 99, 71, 1)'),
+    fillcolor='rgba(255, 99, 71, 0.1)',
+    showlegend=True,
+    hovertemplate='%{text}: %{y:.1f}%<extra></extra>',
+    text=female_data['country']
 ))
 
-# Add trend line with confidence interval
-x = country_comparison['Female'].values
-y = country_comparison['Male'].values
-z = np.polyfit(x, y, 1)
-p = np.poly1d(z)
 
-x_smooth = np.linspace(min(x), max(x), 100)
-y_smooth = p(x_smooth)
-
-# Calculate confidence intervals
-residuals = y - p(x)
-std_dev = np.std(residuals)
-y_upper = y_smooth + 1.96 * std_dev
-y_lower = y_smooth - 1.96 * std_dev
-
-# Add confidence interval
-fig.add_trace(go.Scatter(
-    x=x_smooth,
-    y=y_upper,
-    mode='lines',
-    line=dict(width=0),
-    showlegend=False,
-    hoverinfo='skip'
+male_data = recent_data[recent_data['sex'] == 'Male']
+fig.add_trace(go.Box(
+    y=male_data['obs_value'],
+    name='Male',
+    boxpoints='all',
+    jitter=0.3,
+    pointpos=0,
+    marker=dict(
+        color=male_color,
+        size=8,
+        line=dict(color='white', width=1)
+    ),
+    line=dict(color='rgba(70, 130, 180, 1)'),
+    fillcolor='rgba(70, 130, 180, 0.1)',
+    showlegend=True,
+    hovertemplate='%{text}: %{y:.1f}%<extra></extra>',
+    text=male_data['country']
 ))
 
-fig.add_trace(go.Scatter(
-    x=x_smooth,
-    y=y_lower,
-    mode='lines',
-    fill='tonexty',
-    fillcolor='rgba(231, 76, 60, 0.2)',
-    line=dict(width=0),
-    showlegend=False,
-    hoverinfo='skip'
-))
 
-# Add trend line
-fig.add_trace(go.Scatter(
-    x=x_smooth,
-    y=y_smooth,
-    mode='lines',
-    line=dict(color='#e74c3c', width=2),
-    showlegend=False,
-    hoverinfo='skip'
-))
+median_value = recent_data['obs_value'].median()
+fig.add_hline(y=median_value, line_dash="dash", line_color="gray", opacity=0.5)
 
-# Add annotations for selected points
-mask = ((abs(country_comparison['Male'] - country_comparison['Female']) > 10) |
-        (country_comparison['Female'] > 45) |
-        (country_comparison['Male'] > 45))
 
-for _, row in country_comparison[mask].iterrows():
-    fig.add_annotation(
-        x=row['Female'],
-        y=row['Male'],
-        text=row['country'],
-        showarrow=False,
-        font=dict(size=10),
-        yshift=5
-    )
-
-# Update layout
 fig.update_layout(
-    title={
-        'text': 'HIV Knowledge: Male vs. Female Comparison<br><sup>Each point represents a country\'s most recent data</sup>',
-        'x': 0.5,
-        'xanchor': 'center'
-    },
-    xaxis_title='Female Knowledge (%)',
-    yaxis_title='Male Knowledge (%)',
-    xaxis=dict(range=[0, 70], dtick=10),
-    yaxis=dict(range=[0, 70], dtick=10),
-    plot_bgcolor='white',
+    title=dict(
+        text='Global Gender Gap in HIV Knowledge<br><sup>Most recent data on youth (15-24) with comprehensive HIV knowledge by country</sup>',
+        font=dict(size=16),
+        x=0.5,
+        xanchor='center'
+    ),
+    showlegend=True,
+    legend=dict(
+        orientation='h',
+        yanchor='bottom',
+        y=1.02,
+        xanchor='right',
+        x=1
+    ),
     height=600,
-    showlegend=False,
-    annotations=[
-        dict(
-            text='Points above dashed line: Male knowledge exceeds female knowledge',
-            xref='paper',
-            yref='paper',
-            x=0.5,
-            y=-0.15,
-            showarrow=False,
-            font=dict(size=10)
-        )
-    ]
+    width=None,
+    plot_bgcolor='white',
+    paper_bgcolor='white',
+    margin=dict(l=50, r=50, t=100, b=50),
+    yaxis=dict(
+        title='HIV Knowledge (%)',
+        gridcolor=grid_color,
+        zeroline=False,
+        range=[0, 70],
+        dtick=10
+    ),
+    xaxis=dict(
+        showgrid=False,
+        zeroline=False,
+        ticktext=['Female', 'Male'],
+        tickvals=[0, 1]
+    )
 )
 
-fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
-fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
 
-fig.show()
+for sex, data, color in [('Female', female_data, 'rgba(255, 99, 71, 1)'), 
+                        ('Male', male_data, 'rgba(70, 130, 180, 1)')]:
+    
+    top_countries = data.nlargest(5, 'obs_value')
+    bottom_countries = data.nsmallest(3, 'obs_value')
+    
+    
+    for _, row in pd.concat([top_countries, bottom_countries]).iterrows():
+        if sex == 'Female':
+            xpos = 0
+        else:
+            xpos = 1
+            
+        fig.add_annotation(
+            x=xpos,
+            y=row['obs_value'],
+            text=row['country'],
+            showarrow=False,
+            xanchor='right' if sex == 'Female' else 'left',
+            yanchor='middle',
+            xshift=-10 if sex == 'Female' else 10,
+            font=dict(size=10, color=color)
+        )
+
+
+fig.add_annotation(
+    text='Data source: UNICEF Data',
+    xref='paper',
+    yref='paper',
+    x=1,
+    y=-0.1,
+    showarrow=False,
+    font=dict(size=10, color='gray'),
+    xanchor='right'
+)
+
+fig.show(config={'responsive': True})
 ```
 
 These visualizations reveal several important patterns in global HIV knowledge:
 
-1. **Persistent Gender Gap**: The boxplots show that, on average, males tend to have higher levels of HIV knowledge than females across countries. The median knowledge level for males is noticeably higher than for females.
+1. **Persistent Gender Gap**: The boxplots show that, on average, males tend to have higher levels of HIV
+knowledge than females across countries. The median knowledge level for males is noticeably higher
+than for females.
+2. **Wide Variation Between Countries**: There is substantial variation in HIV knowledge levels across
+countries, with some countries showing knowledge rates above 50% while others fall below 5%.
+3. **Country-Level Gender Disparities**: The comparison plot clearly shows that in most countries (points
+falling above the dashed line), males have higher knowledge levels than females. However, there are
+some exceptions where female knowledge exceeds male knowledge.
+4. **Positive Correlation**: There is a strong positive correlation between male and female knowledge
+levels within countries. Countries that do well in educating one gender about HIV tend to also do well
+with the other gender.
 
-2. **Wide Variation Between Countries**: There is substantial variation in HIV knowledge levels across countries, with some countries showing knowledge rates above 50% while others fall below 5%.
-
-3. **Country-Level Gender Disparities**: The comparison plot clearly shows that in most countries (points falling above the dashed line), males have higher knowledge levels than females. However, there are some exceptions where female knowledge exceeds male knowledge.
-
-4. **Positive Correlation**: There is a strong positive correlation between male and female knowledge levels within countries. Countries that do well in educating one gender about HIV tend to also do well with the other gender.
-
-5. **Regional Patterns**: Some of the highest-performing countries (labeled in the upper right) are clustered in Sub-Saharan Africa, where HIV prevalence is higher and education efforts have been more intensive.
-
-These findings highlight the need for targeted educational interventions that address gender-specific barriers to HIV knowledge, with particular attention to countries and regions where overall knowledge levels remain low.
+These findings **highlight the need for targeted educational interventions** that address gender-specific barriers to HIV knowledge, with particular attention to countries and regions where overall knowledge levels remain low.
 
 ## [Child Stunting Burden by Country]{style="font-family: serif"}
 
-This map displays the percentage of children under 5 affected by stunting (low height-for-age) in Africa and Asia, the two continents with the highest burden of child malnutrition. By focusing on these regions, we can better visualize where interventions are most urgently needed and identify patterns of child nutrition challenges.
+This map displays the percentage of children under 5 affected by stunting (low height-for-age) in Africa and Asia.
 
 ::: {.panel-tabset}
 
 ## Africa
 
-```{python stunting_map_africa}
+```{python}
 #| code-fold: true
-#| code-summary: "Show code for Africa map"
+#| code-summary: "Show code"
 
-# Load world map data for Africa
-world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
-africa = world[world['CONTINENT'] == 'Africa'].copy()
 
-# Filter stunting data
-stunting_data = combined_indicators[
-    (combined_indicators['indicator'].str.contains('height.for.age', case=False, na=False) | 
-     combined_indicators['indicator'].str.contains('stunting', case=False, na=False)) &
-    (~combined_indicators['obs_value'].isna()) &
-    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
-]
+stunting_data = unicef_indicator_1[
+    (unicef_indicator_1['indicator'] == 'Percentage children suffering at least two deprivation. Homogeneous severe standards') &
+    (unicef_indicator_1['sex'] == 'Total')
+].dropna(subset=['obs_value'])
 
-# Get most recent stunting data for each country
-recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
 
-# Create a country name mapping dictionary
-country_mapping = {
-    "Congo, Democratic Republic of the": "Democratic Republic of the Congo",
-    "Congo, the Democratic Republic of the": "Democratic Republic of the Congo",
-    "Congo": "Republic of the Congo",
-    "Tanzania, United Republic of": "United Republic of Tanzania",
-    "Swaziland": "eSwatini",
-    "Côte d'Ivoire": "Ivory Coast",
-    "Ivory Coast": "Ivory Coast",
-    "Bolivia, Plurinational State of": "Bolivia",
-    "Iran, Islamic Republic of": "Iran",
-    "Korea, Democratic People's Republic of": "North Korea",
-    "Korea, Republic of": "South Korea",
-    "Lao People's Democratic Republic": "Laos",
-    "Syrian Arab Republic": "Syria",
-    "Viet Nam": "Vietnam",
-    "Myanmar": "Burma"
-}
+median_stunting = stunting_data.groupby('country')['obs_value'].median().reset_index()
 
-# Apply country name mapping
-recent_stunting['map_country'] = recent_stunting['country'].apply(
-    lambda x: country_mapping.get(x, x)
-)
 
-# Merge stunting data with map data
-africa = africa.merge(
-    recent_stunting[['map_country', 'obs_value']], 
-    left_on='ADMIN', 
-    right_on='map_country', 
-    how='left'
-)
-
-# Convert GeoDataFrame to GeoJSON-like format for Plotly
-africa_json = json.loads(africa.to_json())
-
-# Create choropleth map
 fig = px.choropleth(
-    recent_stunting,
-    locations='alpha_3_code',
+    median_stunting,
+    locations='country',
+    locationmode='country names',
     color='obs_value',
+    color_continuous_scale=['#ffffff', '#e5f5e0', '#74c476', '#238b45'],  
+    range_color=(0, 50),
+    title='Child Deprivation Burden in Africa<br><sup>Median Percentage of Children Under 5</sup>',
+    scope='africa',
     hover_name='country',
-    color_continuous_scale='RdYlBu_r',
-    range_color=[0, 100],  # Set range to 0-100 for percentages
-    labels={'obs_value': 'Stunting Rate (%)'},
-    title='Child Stunting Rates by Country',
-    scope='africa'
+    hover_data={'obs_value': ':.1f'}
 )
 
-# Update layout
 fig.update_layout(
-    title_x=0.5,
+    height=600,
+    width=None,
     geo=dict(
         showframe=False,
         showcoastlines=True,
-        projection_type='equirectangular'
+        projection_type='equirectangular',
+        coastlinecolor='#d4d4d4',
+        countrycolor='#ffffff',
+        showland=True,
+        landcolor='rgba(255, 255, 255, 0.5)',
+        showlakes=False,
+        showcountries=True,
+        resolution=50,
+        bgcolor='rgba(255, 255, 255, 0)'
     ),
-    width=800,
-    height=600,
-    margin=dict(t=50, b=0, l=0, r=0)
+    coloraxis_colorbar=dict(
+        title='Stunting Rate (%)',
+        thickness=15,
+        len=0.3,
+        x=0.85,
+        y=0.5,
+        bgcolor='rgba(255, 255, 255, 0.9)',
+        borderwidth=0,
+        tickfont=dict(size=10, color='#666666'),
+        title_font=dict(size=12, color='#666666')
+    ),
+    title=dict(
+        font=dict(size=16, color='#333333'),
+        y=0.95,
+        x=0.5,
+        xanchor='center'
+    ),
+    margin=dict(l=0, r=0, t=50, b=0),
+    paper_bgcolor='rgba(255, 255, 255, 0)',
+    plot_bgcolor='rgba(255, 255, 255, 0)'
 )
 
-# Show the map
-fig.show()
+
+for country in median_stunting['country']:
+    fig.add_scattergeo(
+        locations=[country],
+        locationmode='country names',
+        text=[country],
+        mode='text',
+        textfont=dict(
+            size=8,
+            color='#666666',
+            family='Arial'
+        ),
+        textposition='middle center',
+        showlegend=False,
+        hoverinfo='skip'
+    )
+
+fig.show(config={'responsive': True})
 ```
 
 ## Asia
 
-```{python stunting_map_asia}
+```{python}
 #| code-fold: true
-#| code-summary: "Show code for Asia map"
+#| code-summary: "Show code for Asia stunting map"
 
-# Load world map data for Asia
-world = gpd.read_file('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
-asia = world[world['CONTINENT'] == 'Asia'].copy()
 
-# Create a country name mapping dictionary for Asia
-asia_country_mapping = {
-    "Iran, Islamic Republic of": "Iran",
-    "Korea, Democratic People's Republic of": "North Korea",
-    "Korea, Republic of": "South Korea",
-    "Lao People's Democratic Republic": "Laos",
-    "Syrian Arab Republic": "Syria",
-    "Viet Nam": "Vietnam",
-    "Myanmar": "Burma"
-}
-
-# Apply country name mapping
-recent_stunting = combined_indicators[
-    (combined_indicators['country'].isin(asia_country_mapping.keys())) &
-    (combined_indicators['indicator'].str.contains('stunting|height.for.age', case=False, na=False)) &
-    (~combined_indicators['obs_value'].isna()) &
-    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
-]
-
-recent_stunting['map_country'] = recent_stunting['country'].apply(
-    lambda x: asia_country_mapping.get(x, x)
-)
-
-# Merge stunting data with map data
-asia = asia.merge(
-    recent_stunting[['map_country', 'obs_value']],
-    left_on='ADMIN',
-    right_on='map_country',
-    how='left'
-)
-
-# Convert GeoDataFrame to GeoJSON-like format for Plotly
-asia_json = json.loads(asia.to_json())
-
-# Create choropleth map
 fig = px.choropleth(
-    recent_stunting,
-    locations='alpha_3_code',
+    median_stunting,
+    locations='country',
+    locationmode='country names',
     color='obs_value',
+    color_continuous_scale=['#ffffff', '#e5f5e0', '#74c476', '#238b45'], 
+    range_color=(0, 50),
+    title='Child Deprivation Burden in Asia<br><sup>Median Percentage of Children Under 5</sup>',
+    scope='asia',
     hover_name='country',
-    color_continuous_scale='RdYlBu_r',
-    range_color=[0, 100],  # Set range to 0-100 for percentages
-    labels={'obs_value': 'Stunting Rate (%)'},
-    title='Child Stunting Rates by Country',
-    scope='asia'
+    hover_data={'obs_value': ':.1f'}
 )
 
-# Update layout
 fig.update_layout(
-    title_x=0.5,
+    height=600,
+    width=None,
     geo=dict(
         showframe=False,
         showcoastlines=True,
-        projection_type='equirectangular'
+        projection_type='equirectangular',
+        coastlinecolor='#d4d4d4',
+        countrycolor='#ffffff',
+        showland=True,
+        landcolor='rgba(255, 255, 255, 0.5)',
+        showlakes=False,
+        showcountries=True,
+        resolution=50,
+        bgcolor='rgba(255, 255, 255, 0)'
     ),
-    width=800,
-    height=600,
-    margin=dict(t=50, b=0, l=0, r=0)
+    coloraxis_colorbar=dict(
+        title='Stunting Rate (%)',
+        thickness=15,
+        len=0.3,
+        x=0.85,
+        y=0.5,
+        bgcolor='rgba(255, 255, 255, 0.9)',
+        borderwidth=0,
+        tickfont=dict(size=10, color='#666666'),
+        title_font=dict(size=12, color='#666666')
+    ),
+    title=dict(
+        font=dict(size=16, color='#333333'),
+        y=0.95,
+        x=0.5,
+        xanchor='center'
+    ),
+    margin=dict(l=0, r=0, t=50, b=0),
+    paper_bgcolor='rgba(255, 255, 255, 0)',
+    plot_bgcolor='rgba(255, 255, 255, 0)'
 )
 
-# Show the map
-fig.show()
+
+for country in median_stunting['country']:
+    fig.add_scattergeo(
+        locations=[country],
+        locationmode='country names',
+        text=[country],
+        mode='text',
+        textfont=dict(
+            size=8,
+            color='#666666',
+            family='Arial'
+        ),
+        textposition='middle center',
+        showlegend=False,
+        hoverinfo='skip'
+    )
+
+fig.show(config={'responsive': True})
 ```
 
 :::
 
-These maps illustrate the geographic distribution of child stunting across Africa and Asia, revealing distinct regional patterns:
+These maps illustrate the geographic distribution of child stunting across Africa and Asia, revealing
+distinct regional patterns:
 
 1. **Concentration in Sub-Saharan Africa**: Countries in the Sahel region and Central Africa show some of the highest stunting rates, with over 30% of children affected in many nations.
-
 2. **South Asian hotspot**: Countries like India, Pakistan, Bangladesh, and Nepal form a significant hotspot of child stunting, with India displaying particularly concerning rates.
-
 3. **Variation within regions**: Both continents show significant variation, with some countries making substantial progress while neighboring nations continue to struggle.
 
-The burden of stunting in these two continents is particularly concerning as they collectively account for over 80% of all stunted children worldwide. Targeted interventions in the darkest green areas represent opportunities for significant improvements in global child nutrition outcomes.
+The burden of stunting in these 2 continents is particularly concerning as they collectively account for over 80% of all stunted children worldwide. Targeted interventions in the **darkest green areas represent opportunities for significant improvements** in global child nutrition outcomes.
+
 
 ## [Progress in Reducing Child Stunting]{style="font-family: serif"}
 
-This area chart tracks Bangladesh's progress in reducing child stunting over time. The visualization demonstrates the country's commitment to improving child nutrition and highlights the effectiveness of targeted interventions implemented over the years. The downward trend represents real improvements in the lives of children and showcases a public health success story that other countries might learn from.
+This area chart tracks Bangladesh's progress in reducing child stunting over time.
 
-```{python bangladesh_stunting_progress}
+```{python}
 #| code-fold: true
-#| code-summary: "Show code for Bangladesh stunting progress"
+#| code-summary: "Show code"
 
-# Filter Bangladesh stunting data
 bangladesh_stunting = combined_indicators[
     (combined_indicators['country'] == 'Bangladesh') &
-    (combined_indicators['indicator'].str.contains('stunting|height.for.age', case=False, na=False)) &
-    (~combined_indicators['indicator'].str.contains('wasting|weight.for.height', case=False, na=False)) &
-    (~combined_indicators['obs_value'].isna()) &
-    ((combined_indicators['sex'] == 'Total') | combined_indicators['sex'].isna())
-]
+    (combined_indicators['indicator'].str.contains('Height-for-age.*Stunting.*Numbers Affected', case=False, na=False))
+].sort_values('time_period')
 
-# Clean and prepare data
-bangladesh_stunting = bangladesh_stunting.copy()
-bangladesh_stunting['obs_value'] = bangladesh_stunting['obs_value'].apply(
-    lambda x: x/100 if x > 100 else x
-)
-bangladesh_stunting['obs_value'] = bangladesh_stunting['obs_value'].apply(
-    lambda x: 100 if x > 100 else x
-)
-bangladesh_stunting = bangladesh_stunting.sort_values('time_period')
-
-# Create area chart
 fig = go.Figure()
 
-# Add area trace
 fig.add_trace(go.Scatter(
     x=bangladesh_stunting['time_period'],
     y=bangladesh_stunting['obs_value'],
     fill='tozeroy',
-    fillcolor='rgba(0, 100, 0, 0.7)',
-    line=dict(color='darkgreen', width=2),
-    mode='lines',
-    name='Stunting Rate',
-    hovertemplate='Year: %{x}<br>Stunting Rate: %{y:.1f}%<extra></extra>'
+    mode='lines+markers',
+    line=dict(
+        color='rgba(0, 100, 0, 1)',
+        width=2
+    ),
+    fillcolor='rgba(0, 100, 0, 0.2)',
+    marker=dict(
+        color='rgba(0, 100, 0, 1)',
+        size=8,
+        line=dict(color='white', width=1)
+    ),
+    name='Children Affected',
+    hovertemplate='<b>%{x}</b><br>Children Affected: %{y:,.0f} thousand<extra></extra>'
 ))
 
-# Add data points
-fig.add_trace(go.Scatter(
-    x=bangladesh_stunting['time_period'],
-    y=bangladesh_stunting['obs_value'],
-    mode='markers',
-    marker=dict(color='darkgreen', size=8),
-    showlegend=False,
-    hovertemplate='Year: %{x}<br>Stunting Rate: %{y:.1f}%<extra></extra>'
-))
+start_value = bangladesh_stunting.iloc[0]['obs_value']
+end_value = bangladesh_stunting.iloc[-1]['obs_value']
+percent_reduction = ((start_value - end_value) / start_value) * 100
 
-# Add value labels for selected points
-n = max(1, len(bangladesh_stunting) // 8)  # Show about 8 labels
-for i in range(0, len(bangladesh_stunting), n):
-    fig.add_annotation(
-        x=bangladesh_stunting.iloc[i]['time_period'],
-        y=bangladesh_stunting.iloc[i]['obs_value'],
-        text=f"{bangladesh_stunting.iloc[i]['obs_value']:.1f}%",
-        showarrow=False,
-        yshift=10,
-        font=dict(color='darkgreen', size=10)
-    )
-
-# Update layout
-fig.update_layout(
-    title={
-        'text': 'Progress in Reducing Child Stunting in Bangladesh<br><sup>Percentage of children under 5</sup>',
-        'x': 0.5,
-        'xanchor': 'center'
-    },
-    xaxis_title='Year',
-    yaxis_title='Stunting Rate (%)',
-    yaxis=dict(range=[0, 100], dtick=10),
-    plot_bgcolor='white',
-    height=500,
-    showlegend=False,
-    annotations=[
-        dict(
-            text='Source: UNICEF Child Indicator Data',
-            xref='paper',
-            yref='paper',
-            x=0.5,
-            y=-0.15,
-            showarrow=False,
-            font=dict(size=10)
-        )
-    ]
+fig.add_annotation(
+    x=0.98,
+    y=0.95,
+    xref='paper',
+    yref='paper',
+    text=f'<b>Total Reduction: {percent_reduction:.1f}%</b><br>From {start_value:,.0f} to {end_value:,.0f} thousand',
+    showarrow=False,
+    font=dict(size=12),
+    align='right',
+    bgcolor='rgba(255, 255, 255, 0.8)',
+    bordercolor='rgba(0, 100, 0, 0.5)',
+    borderwidth=1,
+    borderpad=4
 )
 
-fig.update_xaxes(gridcolor=COLORS['grid'], zeroline=False)
-fig.update_yaxes(gridcolor=COLORS['grid'], zeroline=False)
+fig.update_layout(
+    height=400,
+    width=None,  
+    showlegend=False,
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    margin=dict(l=50, r=50, t=50, b=50),
+    yaxis=dict(
+        title='Number of Children Affected (Thousands)',
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(128,128,128,0.2)',
+        zeroline=False,
+        showline=True,
+        linecolor='black',
+        linewidth=1,
+        tickformat=',d'
+    ),
+    xaxis=dict(
+        title='Year',
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(128,128,128,0.2)',
+        zeroline=False,
+        showline=True,
+        linecolor='black',
+        linewidth=1,
+        dtick='M24'
+    )
+)
 
-fig.show()
+fig.show(config={'responsive': True})
 ```
 
-This area chart illustrates Bangladesh's remarkable journey in reducing the prevalence of child stunting over time. The dark green area represents the percentage of children under 5 who are stunted (height-for-age below -2 standard deviations from the median).
+The visualization now shows a **clear downward trend** in the number of children affected by stunting in Bangladesh, from about 9.2 million in 2000 to 3.9 million in 2022, representing a **significant improvement in child nutrition** over this period.
 
 The downward slope of the chart tells a positive story of nutrition improvement in Bangladesh, which has been achieved through a combination of:
 
-1. **Targeted nutrition interventions** - Including micronutrient supplementation, promotion of exclusive breastfeeding, and complementary feeding practices
+1. **Targeted nutrition interventions**: Including micronutrient supplementation, promotion of exclusive breastfeeding, and complementary feeding practices
+2. **Broader development progress**: Economic growth, improved food security, and enhanced maternal education
+3. **Health system strengthening**: Better access to healthcare services, improved water and sanitation facilities, and increased immunization coverage
 
-2. **Broader development progress** - Economic growth, improved food security, and enhanced maternal education
+## [Population Analysis]{style="font-family: serif"}
 
-3. **Health system strengthening** - Better access to healthcare services, improved water and sanitation facilities, and increased immunization coverage
+```{python}
+#| code-fold: true
+#| code-summary: "Show code"
 
-Bangladesh's progress serves as an inspiring example for other countries facing similar challenges. The consistent decline demonstrates that with sustained commitment and evidence-based approaches, significant improvements in child nutrition outcomes are achievable even in resource-constrained settings.
+
+stunting_data = combined_indicators[
+    combined_indicators['indicator'].str.contains('Height-for-age.*Stunting.*Numbers Affected', case=False, na=False)
+].copy()
+
+
+recent_stunting = stunting_data.sort_values('time_period', ascending=False).groupby('country').first().reset_index()
+
+
+population_data = unicef_metadata[['country', 'Population, total']].copy()
+population_data = population_data.rename(columns={'Population, total': 'total_pop'})
+
+
+recent_population = population_data.groupby('country')['total_pop'].last().reset_index()
+
+
+stunting_analysis = recent_stunting.merge(recent_population, on='country', how='inner')
+stunting_analysis = stunting_analysis[
+    (stunting_analysis['total_pop'].notna()) & 
+    (stunting_analysis['obs_value'].notna()) & 
+    (stunting_analysis['total_pop'] > 0) &
+    (stunting_analysis['obs_value'] > 0)
+]
+
+
+hiv_data = combined_indicators[
+    combined_indicators['indicator'].str.contains('comprehensive, correct knowledge of HIV', case=False, na=False)
+].copy()
+
+
+recent_hiv = hiv_data.sort_values('time_period', ascending=False).groupby(['country', 'sex']).first().reset_index()
+
+
+avg_hiv_knowledge = recent_hiv.groupby('country')['obs_value'].mean().reset_index()
+
+
+hiv_analysis = avg_hiv_knowledge.merge(recent_population, on='country', how='inner')
+
+
+hiv_analysis = hiv_analysis[
+    (hiv_analysis['total_pop'].notna()) & 
+    (hiv_analysis['obs_value'].notna()) & 
+    (hiv_analysis['total_pop'] > 0)
+]
+```
+
+::: {.panel-tabset}
+
+## STUNTING VS POPULATION
+
+```{python}
+#| code-fold: true
+#| code-summary: "Show code"
+
+
+fig1 = go.Figure()
+
+
+fig1.add_trace(go.Scatter(
+    x=stunting_analysis['total_pop'],
+    y=stunting_analysis['obs_value'],
+    mode='markers',
+    marker=dict(
+        color='rgba(220, 20, 60, 0.7)', 
+        size=6,
+        line=dict(color='white', width=0.5)
+    ),
+    text=stunting_analysis['country'],
+    hovertemplate='%{text}<br>Population: %{x:,.0f}<br>Stunted Children: %{y:,.0f}<extra></extra>',
+    showlegend=False,
+    name=''
+))
+
+
+if len(stunting_analysis) > 2:
+    try:
+        
+        log_pop = np.log10(stunting_analysis['total_pop'])
+        z = np.polyfit(log_pop, stunting_analysis['obs_value'], 1)
+        p = np.poly1d(z)
+        
+        
+        x_trend = np.logspace(
+            np.log10(stunting_analysis['total_pop'].min()),
+            np.log10(stunting_analysis['total_pop'].max()),
+            100
+        )
+        
+        
+        fig1.add_trace(go.Scatter(
+            x=x_trend,
+            y=p(np.log10(x_trend)),
+            mode='lines',
+            line=dict(color='rgba(220, 20, 60, 0.8)', width=2),
+            showlegend=False,
+            hoverinfo='skip',
+            name=''
+        ))
+        
+        
+        std_dev = np.std(stunting_analysis['obs_value'] - p(log_pop))
+        fig1.add_trace(go.Scatter(
+            x=x_trend,
+            y=p(np.log10(x_trend)) + std_dev,
+            mode='lines',
+            line=dict(width=0),
+            fillcolor='rgba(220, 20, 60, 0.1)',
+            fill='tonexty',
+            showlegend=False,
+            hoverinfo='skip',
+            name=''
+        ))
+        
+        fig1.add_trace(go.Scatter(
+            x=x_trend,
+            y=p(np.log10(x_trend)) - std_dev,
+            mode='lines',
+            line=dict(width=0),
+            fillcolor='rgba(220, 20, 60, 0.1)',
+            fill='tonexty',
+            showlegend=False,
+            hoverinfo='skip',
+            name=''
+        ))
+    except:
+        pass
+
+
+fig1.update_layout(
+    height=500,
+    width=None,
+    plot_bgcolor='white',
+    paper_bgcolor='white',
+    xaxis=dict(
+        title='Total Population',
+        type='log',
+        showgrid=True,
+        gridcolor='rgba(128, 128, 128, 0.2)',
+        zeroline=False,
+        showline=True,
+        linecolor='black',
+        linewidth=1,
+        ticks='outside',
+        ticktext=['2', '5', '1M', '2', '5', '10M', '2', '5', '100M', '2', '5', '1B', '2'],
+        tickvals=[2e0, 5e0, 1e6, 2e6, 5e6, 1e7, 2e7, 5e7, 1e8, 2e8, 5e8, 1e9, 2e9]
+    ),
+    yaxis=dict(
+        title='Number of Stunted Children (thousands)',
+        showgrid=True,
+        gridcolor='rgba(128, 128, 128, 0.2)',
+        zeroline=False,
+        showline=True,
+        linecolor='black',
+        linewidth=1,
+        ticks='outside'
+    ),
+    margin=dict(l=60, r=30, t=30, b=60),
+    showlegend=False
+)
+
+fig1.show(config={'responsive': True})
+```
+
+## HIV KNOWLEDGE VS POPULATION
+
+```{python}
+#| code-fold: true
+#| code-summary: "Show code"
+
+
+fig2 = go.Figure()
+
+
+fig2.add_trace(go.Scatter(
+    x=hiv_analysis['total_pop'],
+    y=hiv_analysis['obs_value'],
+    mode='markers',
+    marker=dict(
+        color='rgba(128, 0, 128, 0.7)',  
+        size=6,
+        line=dict(color='white', width=0.5)
+    ),
+    text=hiv_analysis['country'],
+    hovertemplate='%{text}<br>Population: %{x:,.0f}<br>HIV Knowledge: %{y:.1f}%<extra></extra>',
+    showlegend=False,
+    name=''
+))
+
+
+if len(hiv_analysis) > 2:
+    try:
+        
+        log_pop = np.log10(hiv_analysis['total_pop'])
+        z = np.polyfit(log_pop, hiv_analysis['obs_value'], 1)
+        p = np.poly1d(z)
+        
+      
+        x_trend = np.logspace(
+            np.log10(hiv_analysis['total_pop'].min()),
+            np.log10(hiv_analysis['total_pop'].max()),
+            100
+        )
+        
+       
+        fig2.add_trace(go.Scatter(
+            x=x_trend,
+            y=p(np.log10(x_trend)),
+            mode='lines',
+            line=dict(color='rgba(128, 0, 128, 0.8)', width=2),
+            showlegend=False,
+            hoverinfo='skip',
+            name=''
+        ))
+        
+       
+        std_dev = np.std(hiv_analysis['obs_value'] - p(log_pop))
+        fig2.add_trace(go.Scatter(
+            x=x_trend,
+            y=p(np.log10(x_trend)) + std_dev,
+            mode='lines',
+            line=dict(width=0),
+            fillcolor='rgba(128, 0, 128, 0.1)',
+            fill='tonexty',
+            showlegend=False,
+            hoverinfo='skip',
+            name=''
+        ))
+        
+        fig2.add_trace(go.Scatter(
+            x=x_trend,
+            y=p(np.log10(x_trend)) - std_dev,
+            mode='lines',
+            line=dict(width=0),
+            fillcolor='rgba(128, 0, 128, 0.1)',
+            fill='tonexty',
+            showlegend=False,
+            hoverinfo='skip',
+            name=''
+        ))
+    except:
+        pass
+
+
+fig2.update_layout(
+    height=500,
+    width=None,
+    plot_bgcolor='white',
+    paper_bgcolor='white',
+    xaxis=dict(
+        title='Total Population',
+        type='log',
+        showgrid=True,
+        gridcolor='rgba(128, 128, 128, 0.2)',
+        zeroline=False,
+        showline=True,
+        linecolor='black',
+        linewidth=1,
+        ticks='outside',
+        ticktext=['2', '5', '1M', '2', '5', '10M', '2', '5', '100M', '2', '5', '1B', '2'],
+        tickvals=[2e0, 5e0, 1e6, 2e6, 5e6, 1e7, 2e7, 5e7, 1e8, 2e8, 5e8, 1e9, 2e9]
+    ),
+    yaxis=dict(
+        title='HIV Knowledge (%)',
+        showgrid=True,
+        gridcolor='rgba(128, 128, 128, 0.2)',
+        zeroline=False,
+        showline=True,
+        linecolor='black',
+        linewidth=1,
+        ticks='outside',
+        range=[0, 60]
+    ),
+    margin=dict(l=60, r=30, t=30, b=60),
+    showlegend=False
+)
+
+fig2.show(config={'responsive': True})
+```
+
+:::
+
+The scatter plots above reveal interesting patterns in how population size relates to both stunting prevalence and HIV knowledge:
+
+1. **Stunting vs Population**: There appears to be a **positive correlation** between population size and the number of stunted children, suggesting that **more populous countries tend to have higher absolute numbers of affected children**. However, this relationship isn't perfectly linear, indicating that other factors beyond population size influence stunting rates.
+
+2. **HIV Knowledge vs Population**: The relationship between population size and HIV knowledge levels is **more complex**. Some countries with smaller populations show higher levels of HIV knowledge, while some larger countries have varying levels of awareness, **suggesting that population size alone isn't a determining factor in HIV education effectiveness**.
 
 ## [Conclusion]{style="font-family: serif"}
 
@@ -853,12 +1186,143 @@ These findings emphasised the urgent need for targeted, region-specific interven
 
 ## [Solutions]{style="font-family: serif"}
 
-1. Prioritize **targeted investments** in countries and regions with the highest rates of child stunting and lowest HIV knowledge, particularly in South Asia and Sub-Saharan Africa.
-2. Develop and **implement gender-sensitive education campaigns** to close the HIV knowledge gap between males and females, ensuring equitable access to information for all youth.
-3. **Integrate nutrition initiatives** with broader development strategies, including improving maternal education, healthcare access, water and sanitation, and food security.
-4.Establish **robust data monitoring systems to track progress**, identify emerging gaps, and enable adaptive, evidence-based policymaking.
-5. Foster **multisectoral collaboration** among governments, NGOs, and international organizations to address both immediate needs and the underlying social determinants of health.
-6. Promote the **exchange of best practices** by learning from successful countries, adapting proven interventions to local contexts, and scaling up effective solutions.
+```{python}
+#| code-fold: true
+#| code-summary: "Show code"
 
+from IPython.display import HTML
+
+
+solutions_html = """
+<div class="solutions-container">
+    <div class="solutions-grid">
+        <div class="g-col-12 g-col-md-4">
+            <div class="card p-2 m-1">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/chart-line.svg" 
+                     width="32" height="32" style="margin-bottom: 0.5rem;">
+                <h3>Targeted Investments</h3>
+                <p class="card-text">Prioritize investments in countries with highest rates of child stunting and lowest HIV knowledge, 
+                   particularly in South Asia and Sub-Saharan Africa.</p>
+            </div>
+        </div>
+        
+        <div class="g-col-12 g-col-md-4">
+            <div class="card p-2 m-1">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/venus-mars.svg" 
+                     width="32" height="32" style="margin-bottom: 0.5rem;">
+                <h3>Gender-Sensitive Education</h3>
+                <p class="card-text">Develop and implement education campaigns to close the HIV knowledge gap between males and females, 
+                   ensuring equitable access to information.</p>
+            </div>
+        </div>
+        
+        <div class="g-col-12 g-col-md-4">
+            <div class="card p-2 m-1">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/apple-whole.svg" 
+                     width="32" height="32" style="margin-bottom: 0.5rem;">
+                <h3>Integrated Nutrition</h3>
+                <p class="card-text">Integrate nutrition initiatives with broader development strategies, including maternal education, 
+                   healthcare access, and food security.</p>
+            </div>
+        </div>
+        
+        <div class="g-col-12 g-col-md-4">
+            <div class="card p-2 m-1">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/chart-column.svg" 
+                     width="32" height="32" style="margin-bottom: 0.5rem;">
+                <h3>Data Monitoring</h3>
+                <p class="card-text">Establish robust systems to track progress, identify gaps, and enable evidence-based policymaking.</p>
+            </div>
+        </div>
+        
+        <div class="g-col-12 g-col-md-4">
+            <div class="card p-2 m-1">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/people-group.svg" 
+                     width="32" height="32" style="margin-bottom: 0.5rem;">
+                <h3>Multisectoral Collaboration</h3>
+                <p class="card-text">Foster collaboration among governments, NGOs, and international organizations to address both immediate 
+                   needs and underlying social determinants.</p>
+            </div>
+        </div>
+        
+        <div class="g-col-12 g-col-md-4">
+            <div class="card p-2 m-1">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/handshake.svg" 
+                     width="32" height="32" style="margin-bottom: 0.5rem;">
+                <h3>Best Practices Exchange</h3>
+                <p class="card-text">Promote learning from successful countries, adapting proven interventions to local contexts, and scaling 
+                   up effective solutions.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.solutions-container {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 1rem 0;
+    margin: 0 auto;
+}
+
+.solutions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    height: 100%;
+    transition: transform 0.2s ease;
+    text-align: center;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.card img {
+    display: block;
+    margin: 1rem auto 0.5rem;
+}
+
+.card h3 {
+    margin: 0.5rem 0;
+    padding: 0 1rem;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    width: 100%;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0 1rem 1rem;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+</style>
+"""
+
+
+HTML(solutions_html)
+```
+
+::: {.text-center .mt-4}
 By acting on these recommendations, we can accelerate progress and help more children grow up healthy and strong.
-
+:::
