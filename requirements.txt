@@ -1,6 +1,0 @@
-pandas>=1.5.0
-numpy>=1.23.0
-plotly>=5.13.0
-seaborn>=0.12.0
-geopandas>=0.12.0
-matplotlib>=3.6.0 
