@@ -9,54 +9,9 @@ format:
     code-tools: true
     code-summary: "Show code"
     embed-resources: true
-    css: |
-      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
-      
-      .title {
-        font-family: 'Montserrat', sans-serif !important;
-        font-size: 3.5em !important;
-        font-weight: 700 !important;
-        color: #2C3E50 !important;
-        letter-spacing: 0.02em !important;
-        margin-bottom: 0.2em !important;
-        text-align: left !important;
-      }
-      
-      .subtitle {
-        font-size: 1.5em !important;
-        margin-bottom: 0.5em !important;
-        color: #34495E !important;
-      }
-      
-      .quarto-title-meta {
-        margin-bottom: 0.5em !important;
-      }
-      
-      .quarto-title-block {
-        margin-bottom: 0.5em !important;
-      }
-      
-      .quarto-title {
-        margin-top: 0.5em !important;
-      }
-      
-      hr {
-        margin: 0.5em 0 !important;
-      }
-      
-      #title-block-header {
-        margin-block-end: 0.5em !important;
-      }
-      
-      .cell {
-        padding: 0.5em 0 !important;
-        margin: 0 !important;
-      }
-execute:
-  echo: true
-  warning: false
-  message: false
-  error: false
+    html-math-method: mathjax
+    css:
+      - styles.css
 author: "Lukman Khiruddin"
 date: "April 22 2025"
 ---
